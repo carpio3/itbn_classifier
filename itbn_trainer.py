@@ -55,13 +55,23 @@ def label_data(FRAME_SIZE, STRIDE, i, seq_len, timing_dict):
 	if(e_frame > seq_len):
 		e_frame = seq_len
 
+	if(overlaps(s_frame, e_frame, timing_dict, "command")):
+		opt_label, aud_label = 1
+	if(overlaps(s_frame, e_frame, timing_dict, "prompt")):
+		opt_label, aud_label = 1
+	if(overlaps(s_frame, e_frame, timing_dict, "reward")):
+		opt_label, aud_label = 1
+	if(overlaps(s_frame, e_frame, timing_dict, "abort")):
+		opt_label, aud_label = 1
+
+
 	if(overlaps(s_frame, e_frame, timing_dict, "gesture_0")):
-		opt_label = 1
+		opt_label = 2
 	if(overlaps(s_frame, e_frame, timing_dict, "gesture_1")):
 		opt_label = 2
 
 	if(overlaps(s_frame, e_frame, timing_dict, "audio_0")):
-		aud_label = 1
+		aud_label = 2
 	if(overlaps(s_frame, e_frame, timing_dict, "audio_1")):
 		aud_label = 2
  
