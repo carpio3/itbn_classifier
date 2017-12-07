@@ -26,7 +26,7 @@ from scipy import signal
 import librosa, librosa.display
 
 # DQN
-# from dqn_model_omega import DQNModel
+from itbn_classifier import ClassifierModel
 
 topic_names = [
     '/action_finished',
@@ -42,9 +42,9 @@ the DQN model.
 
 
 class DQNPackager:
-    def __init__(self, dqn=None, flip=False):
+    def __init__(self, classifier=None, flip=False):
         # dqn model
-        self.__dqn = dqn
+        self.__classifier = classifier
         self.__flip = flip
         self.p = 0
 
@@ -297,7 +297,8 @@ class DQNPackager:
             # print(self.prvs [0][0])
             next = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
             # flow = cv2.calcOpticalFlowFarneback(self.prvs,next, 0.5, 1, 2, 5, 7, 1.5, 1)
-            flow = cv2.calcOpticalFlowFarneback(self.prvs, next, None, 0.5, 1, 8, 10, 7, 1.5, 1)
+            # flow = cv2.calcOpticalFlowFarneback(self.prvs, next, None, 0.5, 1, 8, 10, 7, 1.5, 1)
+            flow = cv2.calcOpticalFlowFarneback(self.prvs, next, None, 0.5, 1, 12, 10, 7, 1.5, 1)
 
             t = rospy.get_rostime()
             opt_img, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
@@ -323,8 +324,8 @@ class DQNPackager:
         core_data = input_data
 
         # mute the first 2 seconds of audio (where the NAO speaks)
-        mute_time = 2
-        input_data[:np.argmax(input_data) + int(16000 * mute_time)] = 0
+        # mute_time = 2
+        # input_data[:np.argmax(input_data)+int(16000*mute_time)] = 0
 
         # get the indicies for the noise sample
         noise_sample_s, noise_sample_e = 16000 * (-1.5), -1
@@ -369,8 +370,12 @@ class DQNPackager:
         frame_len = aud_dtype["cmp_w"]
 
         # pad the entire spectrogram so that overlaps at either end do not fall out of bounds
+        min_val = np.nanmin(S)
+
         empty = np.zeros((S.shape[0], 3))
+        empty.fill(min_val)
         empty_end = np.zeros((S.shape[0], 8))
+        empty_end.fill(min_val)
         S = np.concatenate((empty, S, empty_end), axis=1)
 
         split_data = np.zeros(shape=(num_frames, S.shape[0], frame_len), dtype=S.dtype)
@@ -398,7 +403,7 @@ class DQNPackager:
 
     def getNextAction(self, num_prompt, verbose=False):
         # Execute Pre-processing steps and pass data to the DQN
-        if (self.__dqn == None):
+        if (self.__classifier == None):
             print("model not provided!")
             return -1
 
@@ -420,8 +425,8 @@ class DQNPackager:
         # generate the DQN prediction
         t = rospy.get_rostime()
 
-        nextact = self.__dqn.genPrediction(num_frames, self.__imgStack, self.__pntStack,
-                                           self.__audStack, num_prompt) + 1
+        nextact = self.__classifier.genPrediction(num_frames, self.__imgStack, self.__pntStack,
+                                                  self.__audStack, num_prompt) + 1
         print("genPred_end: ", (rospy.get_rostime() - t).secs)
         # clear the input
         self.reset(already_locked=True)

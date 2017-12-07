@@ -3,14 +3,11 @@
 # generate_itbn_tfrecords.py
 # Madison Clark-Turner
 # 12/2/2017
-import tensorflow as tf
-import numpy as np
+
 from dqn_packager_itbn import *
 import rosbag
 import rospy
 import heapq
-
-from constants import *
 
 import os
 from os.path import isfile, join
@@ -27,9 +24,7 @@ topic_names = [
 def readTimingFile(filename):
     # generate a heap of timing event tuples
     ifile = open(filename, 'r')
-
     timing_queue = []
-
     line = ifile.readline()
     while (len(line) != 0):
         line = line.split()
@@ -38,16 +33,14 @@ def readTimingFile(filename):
         event_time = rospy.Duration(event_time)
         timing_queue.append((event_time, line[0]))
         line = ifile.readline()
-
     heapq.heapify(timing_queue)
-
+    ifile.close()
     return timing_queue
 
 
 def gen_TFRecord_from_file(out_dir, out_filename, bag_filename, timing_filename, flip=False):
     packager = DQNPackager(flip=flip)
-    bag = rosbag.Bag(bagfile)
-
+    bag = rosbag.Bag(bag_filename)
     packager.p = False
 
     #######################
@@ -78,8 +71,7 @@ def gen_TFRecord_from_file(out_dir, out_filename, bag_filename, timing_filename,
                 current_time = heapq.heappop(timing_queue)
             else:
                 all_timing_frames_found = True
-
-        elif (topic == topic_names[1]):
+        if (topic == topic_names[1]):
             packager.imgCallback(msg)
         elif (topic == topic_names[2]):
             packager.audCallback(msg)
@@ -87,7 +79,7 @@ def gen_TFRecord_from_file(out_dir, out_filename, bag_filename, timing_filename,
     # perform data pre-processing steps
     packager.formatOutput()
 
-    print(timing_dict)
+    # print(timing_dict)
 
     # generate TFRecord data
     ex = make_sequence_example(
@@ -119,10 +111,10 @@ if __name__ == '__main__':
 
     #############################
 
-    bagfile = os.environ["HOME"] + "/ITBN_bags/test_03/zga1.bag"
-    timefile = os.environ["HOME"] + "/PycharmProjects/dbn_arl/labels/test_03/zga1.txt"
+    bagfile = os.environ["HOME"] + "/ITBN_bags/test_01/zga1.bag"
+    timefile = os.environ["HOME"] + "/PycharmProjects/dbn_arl/labels/test_01/zga1.txt"
 
-    outfile = "/tfrecords/scrap.tfrecord"
+    outfile = os.environ["HOME"] + "/ITBN_tfrecords/scrap.tfrecord"
     outdir = os.environ["HOME"] + "/ITBN_tfrecords/"
 
     #############################
