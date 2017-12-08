@@ -11,7 +11,6 @@ import heapq
 
 import os
 from os.path import isfile, join
-
 from itbn_tfrecord_rw import *
 
 topic_names = [
@@ -103,9 +102,10 @@ def gen_TFRecord_from_file(out_dir, out_filename, bag_filename, timing_filename,
 
 
 if __name__ == '__main__':
-    gen_single_file = True
-    view_single_file = True
+    gen_single_file = False
     process_all_files = False
+    view_single_file = False
+    view_all_files = True
 
     rospy.init_node('gen_tfrecord', anonymous=True)
 
@@ -113,6 +113,7 @@ if __name__ == '__main__':
 
     bagfile = os.environ["HOME"] + "/ITBN_bags/test_01/zga1.bag"
     timefile = os.environ["HOME"] + "/PycharmProjects/dbn_arl/labels/test_01/zga1.txt"
+    timefile_dir = os.environ["HOME"] + "/PycharmProjects/dbn_arl/labels/"
 
     outfile = os.environ["HOME"] + "/ITBN_tfrecords/scrap.tfrecord"
     outdir = os.environ["HOME"] + "/ITBN_tfrecords/"
@@ -121,31 +122,49 @@ if __name__ == '__main__':
 
     if (gen_single_file):
         # generate a single file and store it as a scrap.tfrecord; Used for Debugging
-
         gen_TFRecord_from_file(out_dir=outdir, out_filename="scrap", bag_filename=bagfile,
                                timing_filename=timefile, flip=False)
 
-    #############################
+    outdir = os.environ["HOME"] + '/ITBN_tfrecords/'
+    if process_all_files:
+        path = os.environ["HOME"] + '/ITBN_bags/'
+        for root, subFolders, files in os.walk(path):
+            for f in files:
+                if '.bag' in f:
+                    out_path = root.replace(path, outdir) + '/'
+                    tffile = f.replace('.bag', '')
+                    bagfile = os.path.join(root, f)
+                    timefile = bagfile.replace(path, timefile_dir).replace('.bag', '.txt')
+                    if not os.path.exists(out_path):
+                        os.makedirs(out_path)
+                    print('Generating: {}'.format(os.path.join(out_path, tffile)))
+                    gen_TFRecord_from_file(out_dir=out_path, out_filename=tffile,
+                                           bag_filename=bagfile,
+                                           timing_filename=timefile, flip=False)
 
-    if (view_single_file):
+    file_set = set()
+    if view_single_file:
+        file_set.add(outfile)
+    elif view_all_files:
+        for root, subFolders, files in os.walk(outdir):
+            for f in files:
+                if '.tfrecord' in f:
+                    file_set.add(os.path.join(root, f))
+    for f in file_set:
         # read contents of scrap.tfrecord; Used for Debugging
-
-        print("READING...")
         coord = tf.train.Coordinator()
-        filename_queue = tf.train.string_input_producer([outfile])
-
+        filename_queue = tf.train.string_input_producer([f])
         with tf.Session() as sess:
             sess.run(tf.local_variables_initializer())
-            # parse TFrecord
-            context_parsed, sequence_parsed = parse_sequence_example(filename_queue)
             threads = tf.train.start_queue_runners(coord=coord)
-
+            # parse TFrecord
 
             def processData(inp, data_type):
                 data_s = tf.reshape(inp, [-1, data_type["cmp_h"], data_type["cmp_w"],
                                           data_type["num_c"]])
                 return tf.cast(data_s, tf.uint8)
 
+            context_parsed, sequence_parsed = parse_sequence_example(filename_queue)
 
             # information to extract from TFrecord
             seq_len = context_parsed["length"]
@@ -162,26 +181,26 @@ if __name__ == '__main__':
                 l, p, a, tl, tv, n = sess.run(
                     [seq_len, opt_raw, aud_raw, timing_labels, timing_values, name])
                 timing_dict = parse_timing_dict(tl, tv)
-
-                print(name)
-                print(timing_dict)
+                # print(timing_dict)
 
             coord.request_stop()
             coord.join(threads)
 
-
-            # Use for visualizing Data Types
             def show(data, d_type):
                 tout = []
                 out = []
                 for i in range(data.shape[0]):
                     imf = np.reshape(data[i], (d_type["cmp_h"], d_type["cmp_w"], d_type["num_c"]))
 
-                    limit_size = 64
+                    limit_size = d_type["cmp_w"]
+                    frame_limit = 12
+                    if d_type["name"] == "aud":
+                        frame_limit = 120
 
-                    if (d_type["cmp_h"] > limit_size):
+                    if (d_type["cmp_w"] > limit_size):
                         mod = limit_size / float(d_type["cmp_h"])
                         imf = cv2.resize(imf, None, fx=mod, fy=mod, interpolation=cv2.INTER_CUBIC)
+
                     if (imf.shape[2] == 2):
                         imf = np.concatenate((imf, np.zeros((d_type["cmp_h"], d_type["cmp_w"], 1))),
                                              axis=2)
@@ -189,73 +208,40 @@ if __name__ == '__main__':
                         imf[..., 2] = imf[..., 1]
                         imf = imf.astype(np.uint8)
 
-                    if (i % 10 == 0 and i != 0):
+                    if (i % frame_limit == 0 and i != 0):
                         if (len(tout) == 0):
                             tout = out.copy()
                         else:
                             tout = np.concatenate((tout, out), axis=0)
-
                         out = []
                     if (len(out) == 0):
                         out = imf
                     else:
                         out = np.concatenate((out, imf), axis=1)
-
-                if (data.shape[0] % 10 != 0):
-                    fill = np.zeros((limit_size, limit_size * (10 - (data.shape[0] % 10)),
+                if (data.shape[0] % frame_limit != 0):
+                    fill = np.zeros((d_type["cmp_h"], d_type["cmp_w"] * (frame_limit -
+                                                                         (data.shape[0] % frame_limit)),
                                      d_type["num_c"]))  # .fill(255)
-                    fill.fill(255)
+                    fill.fill(0)
                     out = np.concatenate((out, fill), axis=1)
+                if (len(out) != 0):
+                    if (len(tout) == 0):
+                        tout = out.copy()
+                    else:
+                        tout = np.concatenate((tout, out), axis=0)
+                    return tout
 
-                return tout
+            # Use for visualizing Data Types
+            show_from = 0
+            p_img = show(p[show_from:], pnt_dtype)
+            cv2.imwrite(f.replace('.tfrecord', '_p.jpg').replace('ITBN_tfrecords', 'ITBN_test_tfvisualdata'), p_img)
+            # os.system('gnome-open test_p.jpg')
 
+            a_img = show(a[show_from:], aud_dtype)
+            cv2.imwrite(f.replace('.tfrecord', '_a.jpg').replace('ITBN_tfrecords', 'ITBN_test_tfvisualdata'), a_img)
+            # os.system('gnome-open test_a.jpg')
 
-            print("file length: ", l)
-
-            show_from = 110
-            img = show(p[show_from:], pnt_dtype)
             # img2 = show(i[show_from:], img_dtype)
-            cv2.imshow("img", img)
             # cv2.imshow("pnt", img2)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-
-        #############################
-
-        # states = ["compliant", "noncompliant"]
-
-    if (process_all_files):
-        path = os.environ[
-                   "HOME"] + '/' + "Documents/AssistiveRobotics/AutismAssistant/pomdpData/long_sess_0"
-        outdir = os.environ["HOME"] + '/' + "catkin_ws/src/deep_q_network/tfrecords/long/"
-        for i in range(1, 2):
-            file_dir = path + str(i)
-            filename_list = [file_dir + '/' + f for f in os.listdir(file_dir) if
-                             isfile(join(file_dir, f))]
-            filename_list.sort()
-            for f in filename_list:
-                state = 1
-                if (f.find("none") >= 0):
-                    state = 0
-
-                # tag = f[f.find("test") + len("test_00")+1:-(len(".bag"))]
-                tag = f
-                while (tag.find("/") >= 0):
-                    tag = tag[tag.find("/") + 1:]
-                tag = tag[:-(len(".bag"))]
-                new_name = "long_sees_0" + str(i) + '_' + tag
-                print(tag + "......." + new_name)
-                index = i
-                # print("truth tests:", f.find("1.bag"), i >=3)
-                # if(f.find("1.bag") >= 0 and i >=3):
-                index = -1
-
-                # writer = tf.python_io.TFRecordWriter(outdir+new_name + ".tfrecord")
-                gen_TFRecord_from_file(outdir=outdir, bagfile=f, state=state, name=new_name,
-                                       flip=False, index=index)
-            # writer.close()
-
-            # writer = tf.python_io.TFRecordWriter(outdir+new_name + "_flip.tfrecord")
-            # gen_TFRecord_from_file(outdir=outdir, bagfile=f, state=state, name=new_name, flip=True, index=index)
-            # writer.close()
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()

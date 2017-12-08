@@ -2,31 +2,29 @@
 # Madison Clark-Turner
 # 12/2/2017
 
-import tensorflow as tf
 import numpy as np
-
 from constants import *
-
 import math
 import threading
 
+import tensorflow as tf
+
 # ROS
-import rospy, rospkg
+import rospy
 from std_msgs.msg import Int8
 from sensor_msgs.msg import Image
 
 # image pre-processing and optical flow generation
 import cv2
-from cv_bridge import CvBridge, CvBridgeError
+from cv_bridge import CvBridge
 
 # audio pre-processing
 from nao_msgs.msg import AudioBuffer
 from noise_subtraction import reduce_noise
 from scipy import signal
-import librosa, librosa.display
-
-# DQN
-from itbn_classifier import ClassifierModel
+import librosa
+import librosa.display
+from matplotlib import pyplot as plt
 
 topic_names = [
     '/action_finished',
@@ -127,7 +125,6 @@ class DQNPackager:
         data = aud_msg.data
         data = np.reshape(data, (-1, 4))
         data = data.transpose([1, 0])
-
         return data[0]
 
     def checkMsgs(self, src):
@@ -185,7 +182,7 @@ class DQNPackager:
         for opt in pnt_out:
             opt = np.asarray(opt).flatten()
 
-        print("format_time:", (rospy.get_rostime() - t).secs, (rospy.get_rostime() - t).nsecs)
+        # print("format_time:", (rospy.get_rostime() - t).secs, (rospy.get_rostime() - t).nsecs)
 
         return img_out, pnt_out
 
@@ -235,44 +232,37 @@ class DQNPackager:
         return img
 
     '''
-	def formatOpt(self, img_src):
-		# generate optical flow
-		img = img_src.copy()
-
-		t = rospy.get_rostime()
-		
-		
-		opt_img = np.zeros(img.shape)[..., 0]
-		
-		if(len(self.frame1)==0):
-			# if img is the first frame then set optical flow to be black screen
-			self.frame1 = img
-			self.prvs = cv2.cvtColor(self.frame1,cv2.COLOR_BGR2GRAY)
-
-		else:
-			frame2 = img
-
-			# generate optical flow
-			#print(self.prvs [0][0])
-			next = cv2.cvtColor(frame2,cv2.COLOR_BGR2GRAY)
-			flow = cv2.calcOpticalFlowFarneback(self.prvs,next, 0.5, 1, 2, 5, 7, 1.5, 1)
-
-			t = rospy.get_rostime()
-			opt_img, ang = cv2.cartToPolar(flow[...,0], flow[...,1])
-
-			# normalize the magnitude to between 0 and 255 (replace with other normalize to prevent precission issues)
-			opt_img = cv2.normalize(opt_img,None,0,255,cv2.NORM_MINMAX) #<-- if there are issues see if using this normalize fixes them
-			self.prvs = next
-
-		mod = pnt_dtype["cmp_h"]/float(img_dtype["cmp_h"])
-		
-		opt_img = cv2.resize(opt_img,None,fx=mod, fy=mod, interpolation=cv2.INTER_CUBIC)
-
-		
-		#opt_img = cv2.normalize(opt_img,None,0,255,cv2.NORM_MINMAX)
-		
-		return np.asarray(opt_img).flatten()
-	'''
+    def formatOpt(self, img_src):
+        # generate optical flow
+        img = img_src.copy()    
+        t = rospy.get_rostime()
+        
+        
+        opt_img = np.zeros(img.shape)[..., 0]
+        
+        if(len(self.frame1)==0):
+            # if img is the first frame then set optical flow to be black screen
+            self.frame1 = img
+            self.prvs = cv2.cvtColor(self.frame1,cv2.COLOR_BGR2GRAY)    
+        else:
+            frame2 = img    
+            # generate optical flow
+            #print(self.prvs [0][0])
+            next = cv2.cvtColor(frame2,cv2.COLOR_BGR2GRAY)
+            flow = cv2.calcOpticalFlowFarneback(self.prvs,next, 0.5, 1, 2, 5, 7, 1.5, 1)    
+            t = rospy.get_rostime()
+            opt_img, ang = cv2.cartToPolar(flow[...,0], flow[...,1])    
+            # normalize the magnitude to between 0 and 255 (replace with other normalize to prevent precission issues)
+            opt_img = cv2.normalize(opt_img,None,0,255,cv2.NORM_MINMAX) #<-- if there are issues see if using this normalize fixes them
+            self.prvs = next    
+        mod = pnt_dtype["cmp_h"]/float(img_dtype["cmp_h"])
+        
+        opt_img = cv2.resize(opt_img,None,fx=mod, fy=mod, interpolation=cv2.INTER_CUBIC)    
+        
+        #opt_img = cv2.normalize(opt_img,None,0,255,cv2.NORM_MINMAX)
+        
+        return np.asarray(opt_img).flatten()
+    '''
 
     def formatOpt(self, img_src):
         # generate optical flow
@@ -297,8 +287,7 @@ class DQNPackager:
             # print(self.prvs [0][0])
             next = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
             # flow = cv2.calcOpticalFlowFarneback(self.prvs,next, 0.5, 1, 2, 5, 7, 1.5, 1)
-            # flow = cv2.calcOpticalFlowFarneback(self.prvs, next, None, 0.5, 1, 8, 10, 7, 1.5, 1)
-            flow = cv2.calcOpticalFlowFarneback(self.prvs, next, None, 0.5, 1, 12, 10, 7, 1.5, 1)
+            flow = cv2.calcOpticalFlowFarneback(self.prvs, next, None, 0.5, 1, 8, 10, 7, 1.5, 1)
 
             t = rospy.get_rostime()
             opt_img, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
@@ -337,9 +326,9 @@ class DQNPackager:
         # smooth signal
         b, a = signal.butter(3, 0.05)
         filtered_input = signal.lfilter(b, a, filtered_input)
-        noise = filtered_input[int(noise_sample_s): noise_sample_e]
 
         # additional spectral subtraction to remove remaining noise
+        noise = filtered_input[int(noise_sample_s): noise_sample_e]
         filtered_input = reduce_noise(filtered_input, noise)
 
         # generate spectrogram
@@ -347,22 +336,21 @@ class DQNPackager:
         S = librosa.power_to_db(S, ref=np.max)
 
         arr = []
-        '''
-		if(False):
-			# if True then output spectrogram to png file (requires matplot.pyplot lib to be imported)
-			plt.figure(figsize=(10,4))
-		
-			librosa.display.specshow(S,y_axis='mel', fmax=8000,x_axis='time')
-			plt.colorbar(format='%+2.0f dB')
-			plt.title('Mel-Spectrogram')
-			plt.tight_layout()
-			print("spectrogram ouput to file.")
 
-			out_file = "assesment_out.png"#"spec_img/all_spec/"+name+".png"
-			plt.savefig(out_file)
-			self.counter += 1
-			plt.clf()
-		'''
+        # if(False):
+        #     # if True then output spectrogram to png file (requires matplot.pyplot lib to be imported)
+        #     plt.figure(figsize=(10,4))
+        #
+        #     librosa.display.specshow(S,y_axis='mel', fmax=8000,x_axis='time')
+        #     plt.colorbar(format='%+2.0f dB')
+        #     plt.title('Mel-Spectrogram')
+        #     plt.tight_layout()
+        #     print("spectrogram ouput to file.")
+        #
+        #     out_file = "assesment_out.png"#"spec_img/all_spec/"+name+".png"
+        #     plt.savefig(out_file)
+        #     self.counter += 1
+        #     plt.clf()
 
         # split the spectrogram into A_i. This generates an overlap between
         # frames with as set stride
