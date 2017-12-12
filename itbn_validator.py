@@ -23,7 +23,7 @@ from datetime import datetime
 
 GAMMA = 0.9
 ALPHA = 1e-5
-NUM_ITER = 100
+NUM_ITER = 30000
 FOLDS = 1
 NUM_REMOVED = 1
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     # generate list of filenames
     for root, dir, files in os.walk(path):
         for f in files:
-            if 'validation' not in f:
+            if 'validation' in f:
                 filenames.append(os.path.join(root, f))
     filenames.sort()
 
@@ -164,19 +164,12 @@ if __name__ == '__main__':
     #################################
 
     # if building model from a checkpoint define location here. Otherwise use empty string ""
-    dqn_chkpnt = ""
+    dqn_chkpnt = "../ITBN_past_models/itbn_1"
     dqn = ClassifierModel(batch_size=BATCH_SIZE, win_size=FRAME_SIZE, learning_rate=ALPHA,
                           filename=dqn_chkpnt, \
                           log_dir="LOG_DIR")
 
-    # if building from checkpoint need to setup dqn_hat variables
-    if (dqn_chkpnt != ""):
-        dqn.assignVariables()
-
-    #################################
     # Train Model
-    #################################
-
     coord = tf.train.Coordinator()
     '''
     sequence length - slen
