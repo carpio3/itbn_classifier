@@ -414,7 +414,7 @@ class ClassifierModel:
                   variable_scope, variable_scope2, var_aud, var_lstm=True):
         '''
 		The DQN model
-			-seq_length: (placeholder) the number of frames in the video
+			-seq_lennoisegth: (placeholder) the number of frames in the video
 			-img_ph: (placeholder) an array that contains the RGB data
 			-pnt_ph: (placeholder) an array that contains the optical flow data
 			-aud_ph: (placeholder) an array that contains the audio data
