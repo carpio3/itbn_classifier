@@ -1,22 +1,21 @@
-import numpy as np
-import tensorflow as tf
-from tensorflow.python.client import timeline
-
 # model structure
-from itbn_classifier import *
-
-# file io
-from itbn_pipeline import *
 import os
 
+from common.itbn_classifier import *
+# file io
+from common.itbn_pipeline import *
+
 # helper methods
-import sys
-from datetime import datetime
 
 ALPHA = 1e-5
-FRAME_SIZE = 50
-STRIDE = 25
+FRAME_SIZE = 45
+STRIDE = 20
+FRAME_SIZE_AUD = 20
+STRIDE_AUD = 7
 
+
+#OPT 45,20  -   probabilities: 0.31, 0.12, 1.0
+#AUD 20, 7  -   probabilities: 0.08, 0.03, 1.0
 
 def overlaps(s_time, e_time, td, label):
     s_label = label + "_s"
@@ -109,7 +108,6 @@ def chunk_data(FRAME_SIZE, STRIDE, seq_len, timing_dict, opt_raw, aud_raw):
 
 
 if __name__ == '__main__':
-    print("time start: {}".format(datetime.now()))
     graphbuild = [1] * TOTAL_PARAMS
     num_params = np.sum(graphbuild)
 
@@ -161,7 +159,6 @@ if __name__ == '__main__':
     human_gesture = 0
     robot_audio = 0
     human_audio = 0
-    noise = 0
     while len(filenames) > 0:
         # read a batch of tfrecords into np arrays
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = dqn.sess.run(
@@ -181,21 +178,42 @@ if __name__ == '__main__':
                 # print(opt_label_data, np.argmax(opt_label_data))
                 if np.argmax(opt_label_data) == 0:
                     empty_count_opt += 1
-                if np.argmax(aud_label_data) == 0:
-                    empty_count_aud += 1
                 if np.argmax(opt_label_data) == 1:
                     robot_motion += 1
                 if np.argmax(opt_label_data) == 2:
                     human_gesture += 1
+            avg_chunks += num_chunks
+            counter += 1
+    print('number of files: {}\nnumber of chunks: {}\nempty: {}\nrobot: {}\ngesture: {}'.format(
+        counter, avg_chunks, empty_count_opt, robot_motion, human_gesture))
+
+    filenames = list()
+    for root, dir, files in os.walk(path):
+        for f in files:
+            if 'validation' not in f:
+                filenames.append(os.path.join(root, f))
+    filenames.sort()
+    while len(filenames) > 0:
+        # read a batch of tfrecords into np arrays
+        seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = dqn.sess.run(
+            [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
+        name = name[0].replace('.txt', '.tfrecord').replace(
+            '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../ITBN_tfrecords/')
+        if name in filenames:
+            # print('{}'.format(name))
+            filenames.remove(name)
+            timing_dict = parse_timing_dict(timing_labels[0], timing_values[0])
+            num_chunks = (seq_len - FRAME_SIZE_AUD) / STRIDE_AUD + 1
+            for i in range(num_chunks):
+                # Label Data
+                # one hot representation of the state or action
+                opt_label_data, aud_label_data = label_data(FRAME_SIZE_AUD, STRIDE_AUD, i,
+                                                            seq_len, timing_dict)
+                # print(opt_label_data, np.argmax(opt_label_data))
+                if np.argmax(aud_label_data) == 0:
+                    empty_count_aud += 1
                 if np.argmax(aud_label_data) == 1:
                     robot_audio += 1
                 if np.argmax(aud_label_data) == 2:
                     human_audio += 1
-                if np.argmax(aud_label_data) == 3:
-                    noise += 1
-            avg_chunks += num_chunks
-            counter += 1
-    print('{}, {}, {}, {}, {}, {}, {}, {}, {}, {}'.format(counter, avg_chunks, avg_chunks/counter,
-                                                      empty_count_opt, robot_motion, human_gesture,
-                                                      empty_count_aud, robot_audio,
-                                                      human_audio, noise))
+    print('\nempty: {}\nrobot: {}\naudio: {}'.format(empty_count_aud, robot_audio, human_audio))

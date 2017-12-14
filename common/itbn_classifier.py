@@ -6,10 +6,9 @@
 from __future__ import print_function
 
 import tensorflow as tf
-import numpy as np
 
 # contains information relating to input data size
-from constants import *
+from common.constants import *
 
 # network layer information for P_CNN
 layer_elements = [-1, 16, 32, 128, OPT_CLASSES]

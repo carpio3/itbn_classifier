@@ -4,9 +4,10 @@
 # Madison Clark-Turner
 # 12/2/2017
 
-import tensorflow as tf
 import numpy as np
-from constants import *
+import tensorflow as tf
+
+from common.constants import *
 
 
 # WRITE

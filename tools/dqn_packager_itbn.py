@@ -2,29 +2,25 @@
 # Madison Clark-Turner
 # 12/2/2017
 
-import numpy as np
-from constants import *
 import math
 import threading
 
-import tensorflow as tf
-
-# ROS
-import rospy
-from std_msgs.msg import Int8
-from sensor_msgs.msg import Image
-
 # image pre-processing and optical flow generation
 import cv2
-from cv_bridge import CvBridge
-
-# audio pre-processing
-from nao_msgs.msg import AudioBuffer
-from noise_subtraction import reduce_noise
-from scipy import signal
 import librosa
 import librosa.display
-from matplotlib import pyplot as plt
+import numpy as np
+# ROS
+import rospy
+from cv_bridge import CvBridge
+# audio pre-processing
+from nao_msgs.msg import AudioBuffer
+from scipy import signal
+from sensor_msgs.msg import Image
+from std_msgs.msg import Int8
+
+from common.constants import *
+from noise_subtraction import reduce_noise
 
 topic_names = [
     '/action_finished',

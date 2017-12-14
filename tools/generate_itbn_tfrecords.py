@@ -4,14 +4,13 @@
 # Madison Clark-Turner
 # 12/2/2017
 
-from dqn_packager_itbn import *
-import rosbag
-import rospy
 import heapq
-
 import os
-from os.path import isfile, join
-from itbn_tfrecord_rw import *
+
+import rosbag
+
+from common.itbn_tfrecord_rw import *
+from tools.dqn_packager_itbn import *
 
 topic_names = [
     '/action_finished',

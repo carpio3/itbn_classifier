@@ -1,5 +1,5 @@
+from common.constants import *
 from itbn_tfrecord_rw import *
-from constants import *
 
 
 def input_pipeline(filenames):
