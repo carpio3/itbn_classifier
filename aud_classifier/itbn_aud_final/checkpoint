@@ -1,0 +1,6 @@
+model_checkpoint_path: "model.ckpt"
+all_model_checkpoint_paths: "../itbn_aud_2/model.ckpt"
+all_model_checkpoint_paths: "../itbn_aud_3/model.ckpt"
+all_model_checkpoint_paths: "../itbn_aud_4/model.ckpt"
+all_model_checkpoint_paths: "../itbn_aud_5/model.ckpt"
+all_model_checkpoint_paths: "model.ckpt"

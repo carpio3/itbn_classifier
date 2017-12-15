@@ -1,0 +1,383 @@
+time start: 2017-12-13 20:00:08.080493
+['../../ITBN_tfrecords/test_01/a0.tfrecord', '../../ITBN_tfrecords/test_01/a1.tfrecord', '../../ITBN_tfrecords/test_01/g0.tfrecord', '../../ITBN_tfrecords/test_01/g1.tfrecord', '../../ITBN_tfrecords/test_01/ga0.tfrecord', '../../ITBN_tfrecords/test_01/ga1.tfrecord', '../../ITBN_tfrecords/test_01/none0.tfrecord', '../../ITBN_tfrecords/test_01/none1.tfrecord', '../../ITBN_tfrecords/test_01/z0.tfrecord', '../../ITBN_tfrecords/test_01/z1.tfrecord', '../../ITBN_tfrecords/test_01/za1.tfrecord', '../../ITBN_tfrecords/test_01/zg1.tfrecord', '../../ITBN_tfrecords/test_01/zga0.tfrecord', '../../ITBN_tfrecords/test_01/zga1.tfrecord', '../../ITBN_tfrecords/test_02/a0.tfrecord', '../../ITBN_tfrecords/test_02/g1.tfrecord', '../../ITBN_tfrecords/test_02/ga1.tfrecord', '../../ITBN_tfrecords/test_02/none0.tfrecord', '../../ITBN_tfrecords/test_02/none1.tfrecord', '../../ITBN_tfrecords/test_02/z0.tfrecord', '../../ITBN_tfrecords/test_02/z1.tfrecord', '../../ITBN_tfrecords/test_02/za0.tfrecord', '../../ITBN_tfrecords/test_02/za1.tfrecord', '../../ITBN_tfrecords/test_02/zg0.tfrecord', '../../ITBN_tfrecords/test_02/zg1.tfrecord', '../../ITBN_tfrecords/test_02/zga0.tfrecord', '../../ITBN_tfrecords/test_03/a0.tfrecord', '../../ITBN_tfrecords/test_03/a1.tfrecord', '../../ITBN_tfrecords/test_03/g0.tfrecord', '../../ITBN_tfrecords/test_03/g1.tfrecord', '../../ITBN_tfrecords/test_03/ga0.tfrecord', '../../ITBN_tfrecords/test_03/z0-1.tfrecord', '../../ITBN_tfrecords/test_03/z1.tfrecord', '../../ITBN_tfrecords/test_03/za0.tfrecord', '../../ITBN_tfrecords/test_03/za1.tfrecord', '../../ITBN_tfrecords/test_03/zg0.tfrecord', '../../ITBN_tfrecords/test_03/zg1.tfrecord', '../../ITBN_tfrecords/test_03/zga0.tfrecord', '../../ITBN_tfrecords/test_03/zga1.tfrecord', '../../ITBN_tfrecords/test_04/a0.tfrecord', '../../ITBN_tfrecords/test_04/g1.tfrecord', '../../ITBN_tfrecords/test_04/ga0.tfrecord', '../../ITBN_tfrecords/test_04/none.tfrecord', '../../ITBN_tfrecords/test_04/za0.tfrecord', '../../ITBN_tfrecords/test_04/za1.tfrecord', '../../ITBN_tfrecords/test_04/zg0.tfrecord', '../../ITBN_tfrecords/test_04/zga0.tfrecord', '../../ITBN_tfrecords/test_05/a0.tfrecord', '../../ITBN_tfrecords/test_05/a1.tfrecord', '../../ITBN_tfrecords/test_05/g0.tfrecord', '../../ITBN_tfrecords/test_05/g1.tfrecord', '../../ITBN_tfrecords/test_05/ga1.tfrecord', '../../ITBN_tfrecords/test_05/none0.tfrecord', '../../ITBN_tfrecords/test_05/none1.tfrecord', '../../ITBN_tfrecords/test_05/none2.tfrecord', '../../ITBN_tfrecords/test_05/z0.tfrecord', '../../ITBN_tfrecords/test_05/zg1.tfrecord', '../../ITBN_tfrecords/test_05/zga0.tfrecord', '../../ITBN_tfrecords/test_05/zga1.tfrecord', '../../ITBN_tfrecords/test_06/a0.tfrecord', '../../ITBN_tfrecords/test_06/g0.tfrecord', '../../ITBN_tfrecords/test_06/ga1.tfrecord', '../../ITBN_tfrecords/test_06/none0.tfrecord', '../../ITBN_tfrecords/test_06/none1.tfrecord', '../../ITBN_tfrecords/test_06/none2.tfrecord', '../../ITBN_tfrecords/test_06/none3.tfrecord', '../../ITBN_tfrecords/test_06/z0.tfrecord', '../../ITBN_tfrecords/test_06/z1.tfrecord', '../../ITBN_tfrecords/test_06/za1.tfrecord', '../../ITBN_tfrecords/test_06/zg0.tfrecord', '../../ITBN_tfrecords/test_06/zg1.tfrecord', '../../ITBN_tfrecords/test_06/zga0.tfrecord', '../../ITBN_tfrecords/test_06/zga1.tfrecord', '../../ITBN_tfrecords/test_07/none2.tfrecord', '../../ITBN_tfrecords/test_07/none3.tfrecord', '../../ITBN_tfrecords/test_07/none4.tfrecord', '../../ITBN_tfrecords/test_07/none5.tfrecord', '../../ITBN_tfrecords/test_07/none6.tfrecord', '../../ITBN_tfrecords/test_07/none7.tfrecord', '../../ITBN_tfrecords/test_07/none8.tfrecord', '../../ITBN_tfrecords/test_07/none9.tfrecord', '../../ITBN_tfrecords/test_08/none0.tfrecord', '../../ITBN_tfrecords/test_08/none1.tfrecord', '../../ITBN_tfrecords/test_08/none2.tfrecord', '../../ITBN_tfrecords/test_08/none3.tfrecord', '../../ITBN_tfrecords/test_08/none4.tfrecord', '../../ITBN_tfrecords/test_08/none5.tfrecord', '../../ITBN_tfrecords/test_08/none6.tfrecord', '../../ITBN_tfrecords/test_08/none7.tfrecord', '../../ITBN_tfrecords/test_09/none0_03.tfrecord', '../../ITBN_tfrecords/test_09/none1_01.tfrecord', '../../ITBN_tfrecords/test_09/z0_03.tfrecord', '../../ITBN_tfrecords/test_09/z1_01.tfrecord', '../../ITBN_tfrecords/test_09/z1_03.tfrecord', '../../ITBN_tfrecords/test_10/1_a1.tfrecord', '../../ITBN_tfrecords/test_10/1_g0.tfrecord', '../../ITBN_tfrecords/test_10/1_g1.tfrecord', '../../ITBN_tfrecords/test_10/1_ga1.tfrecord', '../../ITBN_tfrecords/test_10/1_none0.tfrecord', '../../ITBN_tfrecords/test_10/1_z0.tfrecord', '../../ITBN_tfrecords/test_10/1_z1.tfrecord', '../../ITBN_tfrecords/test_10/1_z2.tfrecord', '../../ITBN_tfrecords/test_10/1_z3.tfrecord', '../../ITBN_tfrecords/test_10/1_za1.tfrecord', '../../ITBN_tfrecords/test_10/2_a0.tfrecord', '../../ITBN_tfrecords/test_10/2_a1.tfrecord', '../../ITBN_tfrecords/test_10/2_g0.tfrecord', '../../ITBN_tfrecords/test_10/2_g1.tfrecord', '../../ITBN_tfrecords/test_10/2_ga0.tfrecord', '../../ITBN_tfrecords/test_10/2_ga1.tfrecord', '../../ITBN_tfrecords/test_10/2_none1.tfrecord', '../../ITBN_tfrecords/test_10/2_z2.tfrecord', '../../ITBN_tfrecords/test_10/2_z3.tfrecord', '../../ITBN_tfrecords/test_10/2_za0.tfrecord', '../../ITBN_tfrecords/test_10/2_za1.tfrecord', '../../ITBN_tfrecords/test_10/2_zg0.tfrecord', '../../ITBN_tfrecords/test_10/2_zg1.tfrecord', '../../ITBN_tfrecords/test_10/2_zga1.tfrecord', '../../ITBN_tfrecords/test_10/3_a1.tfrecord', '../../ITBN_tfrecords/test_10/3_g1.tfrecord', '../../ITBN_tfrecords/test_10/3_ga0.tfrecord', '../../ITBN_tfrecords/test_10/3_ga1.tfrecord', '../../ITBN_tfrecords/test_10/3_none0.tfrecord', '../../ITBN_tfrecords/test_10/3_none1.tfrecord', '../../ITBN_tfrecords/test_10/3_none2.tfrecord', '../../ITBN_tfrecords/test_10/3_z0.tfrecord', '../../ITBN_tfrecords/test_10/3_z1.tfrecord', '../../ITBN_tfrecords/test_10/3_z2.tfrecord', '../../ITBN_tfrecords/test_10/3_za0.tfrecord', '../../ITBN_tfrecords/test_10/3_za1.tfrecord', '../../ITBN_tfrecords/test_10/3_zg0.tfrecord', '../../ITBN_tfrecords/test_10/3_zga0.tfrecord', '../../ITBN_tfrecords/test_10/3_zga1.tfrecord', '../../ITBN_tfrecords/test_10/4_a0.tfrecord', '../../ITBN_tfrecords/test_10/4_a1.tfrecord', '../../ITBN_tfrecords/test_10/4_g0.tfrecord', '../../ITBN_tfrecords/test_10/4_ga0.tfrecord', '../../ITBN_tfrecords/test_10/4_ga1.tfrecord', '../../ITBN_tfrecords/test_10/4_none0.tfrecord']
+2017-12-13 20:00:09.012218: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.1 instructions, but these are available on your machine and could speed up CPU computations.
+2017-12-13 20:00:09.012242: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use SSE4.2 instructions, but these are available on your machine and could speed up CPU computations.
+2017-12-13 20:00:09.012246: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX instructions, but these are available on your machine and could speed up CPU computations.
+2017-12-13 20:00:09.012249: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use AVX2 instructions, but these are available on your machine and could speed up CPU computations.
+2017-12-13 20:00:09.012252: W tensorflow/core/platform/cpu_feature_guard.cc:45] The TensorFlow library wasn't compiled to use FMA instructions, but these are available on your machine and could speed up CPU computations.
+2017-12-13 20:00:09.347338: I tensorflow/core/common_runtime/gpu/gpu_device.cc:955] Found device 0 with properties: 
+name: TITAN Xp
+major: 6 minor: 1 memoryClockRate (GHz) 1.582
+pciBusID 0000:03:00.0
+Total memory: 11.90GiB
+Free memory: 11.21GiB
+2017-12-13 20:00:09.347363: I tensorflow/core/common_runtime/gpu/gpu_device.cc:976] DMA: 0 
+2017-12-13 20:00:09.347368: I tensorflow/core/common_runtime/gpu/gpu_device.cc:986] 0:   Y 
+2017-12-13 20:00:09.347375: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1045] Creating TensorFlow device (/gpu:0) -> (device: 0, name: TITAN Xp, pci bus id: 0000:03:00.0)
+VARIABLE VALUES INITIALIZED
+Num epochs: 10000
+Batch Size: 1
+Num Files: 139
+Num iterations: 30000
+2017-12-13 20:00:10.135941: I tensorflow/stream_executor/dso_loader.cc:139] successfully opened CUDA library libcupti.so.8.0 locally
+iteration: 0	time: 0:00:02.020926	class counts: [3, 1, 0]
+pred: 2	label: 1
+iteration: 100	time: 0:01:00.656889	class counts: [108, 89, 91]
+iteration: 200	time: 0:01:18.205169	class counts: [212, 171, 230]
+iteration: 300	time: 0:01:01.455091	class counts: [321, 258, 302]
+iteration: 400	time: 0:01:18.629484	class counts: [442, 355, 416]
+iteration: 500	time: 0:01:18.264393	class counts: [543, 460, 524]
+pred: 1	label: 1
+iteration: 600	time: 0:01:14.695578	class counts: [655, 556, 618]
+iteration: 700	time: 0:01:16.736519	class counts: [772, 646, 729]
+iteration: 800	time: 0:01:17.079557	class counts: [876, 748, 834]
+iteration: 900	time: 0:01:17.339288	class counts: [1001, 845, 930]
+iteration: 1000	time: 0:01:04.396380	class counts: [1095, 922, 1035]
+pred: 0	label: 1
+iteration: 1100	time: 0:01:11.773592	class counts: [1188, 1011, 1146]
+iteration: 1200	time: 0:01:13.799105	class counts: [1296, 1106, 1239]
+iteration: 1300	time: 0:01:04.006513	class counts: [1388, 1191, 1333]
+iteration: 1400	time: 0:01:14.578695	class counts: [1488, 1298, 1459]
+iteration: 1500	time: 0:01:10.250098	class counts: [1600, 1404, 1555]
+pred: 2	label: 1
+iteration: 1600	time: 0:01:09.457956	class counts: [1697, 1482, 1665]
+iteration: 1700	time: 0:01:11.348641	class counts: [1808, 1567, 1774]
+iteration: 1800	time: 0:01:04.270476	class counts: [1898, 1658, 1869]
+iteration: 1900	time: 0:01:09.757470	class counts: [1986, 1760, 1970]
+iteration: 2000	time: 0:01:15.441058	class counts: [2089, 1858, 2075]
+pred: 1	label: 1
+iteration: 2100	time: 0:01:07.357539	class counts: [2188, 1943, 2180]
+iteration: 2200	time: 0:01:06.262327	class counts: [2300, 2017, 2273]
+iteration: 2300	time: 0:01:13.399591	class counts: [2413, 2099, 2394]
+iteration: 2400	time: 0:01:07.346814	class counts: [2520, 2187, 2491]
+iteration: 2500	time: 0:01:11.649722	class counts: [2622, 2278, 2591]
+pred: 0	label: 1
+iteration: 2600	time: 0:01:06.921810	class counts: [2725, 2354, 2688]
+iteration: 2700	time: 0:01:03.284727	class counts: [2808, 2435, 2786]
+iteration: 2800	time: 0:01:14.354918	class counts: [2910, 2521, 2898]
+iteration: 2900	time: 0:01:08.598481	class counts: [3008, 2607, 3000]
+iteration: 3000	time: 0:01:00.568204	class counts: [3089, 2686, 3105]
+pred: 1	label: 1
+iteration: 3100	time: 0:01:19.911655	class counts: [3192, 2794, 3215]
+iteration: 3200	time: 0:01:01.758437	class counts: [3291, 2873, 3319]
+iteration: 3300	time: 0:01:06.860834	class counts: [3402, 2968, 3422]
+iteration: 3400	time: 0:01:04.773056	class counts: [3490, 3048, 3539]
+iteration: 3500	time: 0:01:06.619956	class counts: [3581, 3139, 3637]
+pred: 2	label: 1
+iteration: 3600	time: 0:01:16.369866	class counts: [3699, 3227, 3727]
+iteration: 3700	time: 0:01:07.239250	class counts: [3796, 3318, 3818]
+iteration: 3800	time: 0:01:09.894746	class counts: [3898, 3402, 3941]
+iteration: 3900	time: 0:01:08.026739	class counts: [3994, 3484, 4033]
+iteration: 4000	time: 0:01:16.507256	class counts: [4101, 3559, 4145]
+pred: 2	label: 1
+iteration: 4100	time: 0:01:23.275759	class counts: [4202, 3666, 4259]
+iteration: 4200	time: 0:01:11.303068	class counts: [4305, 3742, 4358]
+iteration: 4300	time: 0:01:05.975844	class counts: [4392, 3836, 4454]
+iteration: 4400	time: 0:01:11.636486	class counts: [4498, 3910, 4552]
+iteration: 4500	time: 0:01:21.557515	class counts: [4598, 3997, 4674]
+pred: 1	label: 1
+iteration: 4600	time: 0:01:10.510509	class counts: [4698, 4082, 4762]
+iteration: 4700	time: 0:01:19.457955	class counts: [4798, 4173, 4869]
+iteration: 4800	time: 0:01:16.317015	class counts: [4895, 4269, 4964]
+iteration: 4900	time: 0:01:02.965105	class counts: [4982, 4369, 5068]
+iteration: 5000	time: 0:01:18.106508	class counts: [5093, 4466, 5184]
+pred: 2	label: 1
+iteration: 5100	time: 0:01:03.880020	class counts: [5180, 4537, 5289]
+iteration: 5200	time: 0:01:15.051457	class counts: [5310, 4608, 5389]
+iteration: 5300	time: 0:01:06.264586	class counts: [5407, 4688, 5493]
+iteration: 5400	time: 0:01:15.981025	class counts: [5521, 4782, 5594]
+iteration: 5500	time: 0:01:20.772513	class counts: [5623, 4877, 5713]
+pred: 0	label: 1
+iteration: 5600	time: 0:01:04.770209	class counts: [5703, 4965, 5801]
+iteration: 5700	time: 0:01:14.505492	class counts: [5816, 5045, 5904]
+iteration: 5800	time: 0:01:15.148412	class counts: [5936, 5128, 6005]
+iteration: 5900	time: 0:01:06.571738	class counts: [6027, 5206, 6097]
+iteration: 6000	time: 0:01:17.629960	class counts: [6108, 5299, 6221]
+pred: 1	label: 1
+iteration: 6100	time: 0:01:19.287985	class counts: [6211, 5394, 6325]
+iteration: 6200	time: 0:01:19.894482	class counts: [6331, 5478, 6421]
+iteration: 6300	time: 0:01:22.130858	class counts: [6447, 5572, 6522]
+iteration: 6400	time: 0:01:21.158727	class counts: [6545, 5649, 6641]
+iteration: 6500	time: 0:01:18.672565	class counts: [6650, 5741, 6733]
+pred: 0	label: 1
+iteration: 6600	time: 0:01:24.682511	class counts: [6764, 5829, 6850]
+iteration: 6700	time: 0:01:23.701598	class counts: [6880, 5917, 6954]
+iteration: 6800	time: 0:01:22.121791	class counts: [6994, 6020, 7043]
+iteration: 6900	time: 0:01:26.076334	class counts: [7100, 6113, 7157]
+iteration: 7000	time: 0:01:19.055213	class counts: [7193, 6203, 7258]
+pred: 2	label: 1
+iteration: 7100	time: 0:01:11.804797	class counts: [7267, 6292, 7353]
+iteration: 7200	time: 0:01:22.485276	class counts: [7364, 6393, 7453]
+iteration: 7300	time: 0:01:39.354057	class counts: [7496, 6499, 7578]
+iteration: 7400	time: 0:01:17.611400	class counts: [7607, 6582, 7664]
+iteration: 7500	time: 0:01:17.594649	class counts: [7705, 6658, 7776]
+pred: 2	label: 1
+iteration: 7600	time: 0:01:20.061068	class counts: [7809, 6751, 7874]
+iteration: 7700	time: 0:01:18.253198	class counts: [7893, 6846, 7982]
+iteration: 7800	time: 0:01:16.178348	class counts: [7998, 6933, 8070]
+iteration: 7900	time: 0:01:30.836408	class counts: [8121, 7029, 8189]
+iteration: 8000	time: 0:01:20.189799	class counts: [8226, 7117, 8280]
+pred: 0	label: 0
+iteration: 8100	time: 0:01:28.678784	class counts: [8328, 7221, 8396]
+iteration: 8200	time: 0:01:20.062883	class counts: [8432, 7303, 8494]
+iteration: 8300	time: 0:01:23.899497	class counts: [8535, 7407, 8598]
+iteration: 8400	time: 0:01:15.571581	class counts: [8626, 7481, 8709]
+iteration: 8500	time: 0:01:27.055813	class counts: [8740, 7579, 8806]
+pred: 0	label: 1
+iteration: 8600	time: 0:01:18.171390	class counts: [8832, 7665, 8911]
+iteration: 8700	time: 0:01:27.436932	class counts: [8936, 7765, 9019]
+iteration: 8800	time: 0:01:18.987553	class counts: [9041, 7847, 9118]
+iteration: 8900	time: 0:01:21.590835	class counts: [9133, 7947, 9220]
+iteration: 9000	time: 0:01:17.610444	class counts: [9231, 8028, 9320]
+pred: 0	label: 1
+iteration: 9100	time: 0:01:13.522118	class counts: [9321, 8111, 9416]
+iteration: 9200	time: 0:01:21.784835	class counts: [9412, 8198, 9541]
+iteration: 9300	time: 0:01:15.544046	class counts: [9505, 8286, 9640]
+iteration: 9400	time: 0:01:19.801878	class counts: [9599, 8374, 9741]
+iteration: 9500	time: 0:01:23.887998	class counts: [9703, 8476, 9838]
+pred: 2	label: 1
+iteration: 9600	time: 0:01:25.684281	class counts: [9797, 8574, 9950]
+iteration: 9700	time: 0:01:19.857588	class counts: [9902, 8658, 10047]
+iteration: 9800	time: 0:01:27.878019	class counts: [10021, 8748, 10151]
+iteration: 9900	time: 0:01:30.050864	class counts: [10148, 8830, 10264]
+iteration: 10000	time: 0:01:15.258492	class counts: [10245, 8912, 10360]
+pred: 1	label: 1
+iteration: 10100	time: 0:01:13.245062	class counts: [10323, 9007, 10452]
+iteration: 10200	time: 0:01:21.066378	class counts: [10410, 9104, 10557]
+iteration: 10300	time: 0:01:24.716808	class counts: [10527, 9189, 10663]
+iteration: 10400	time: 0:01:15.963735	class counts: [10624, 9271, 10763]
+iteration: 10500	time: 0:01:26.023944	class counts: [10721, 9367, 10884]
+pred: 1	label: 1
+iteration: 10600	time: 0:01:25.782976	class counts: [10830, 9462, 10991]
+iteration: 10700	time: 0:01:19.941532	class counts: [10939, 9546, 11094]
+iteration: 10800	time: 0:01:15.720575	class counts: [11031, 9641, 11183]
+iteration: 10900	time: 0:01:18.022557	class counts: [11134, 9728, 11282]
+iteration: 11000	time: 0:01:27.851982	class counts: [11242, 9824, 11394]
+pred: 0	label: 1
+iteration: 11100	time: 0:01:24.868146	class counts: [11355, 9912, 11498]
+iteration: 11200	time: 0:01:20.574508	class counts: [11448, 9990, 11610]
+iteration: 11300	time: 0:01:20.423294	class counts: [11542, 10081, 11710]
+iteration: 11400	time: 0:01:15.031400	class counts: [11633, 10169, 11805]
+iteration: 11500	time: 0:01:20.214919	class counts: [11731, 10251, 11918]
+pred: 2	label: 1
+iteration: 11600	time: 0:01:29.594935	class counts: [11859, 10343, 12028]
+iteration: 11700	time: 0:01:17.673038	class counts: [11963, 10429, 12117]
+iteration: 11800	time: 0:01:22.417128	class counts: [12059, 10530, 12223]
+iteration: 11900	time: 0:01:20.859403	class counts: [12161, 10616, 12322]
+iteration: 12000	time: 0:01:30.503887	class counts: [12270, 10719, 12434]
+pred: 1	label: 1
+iteration: 12100	time: 0:01:15.817132	class counts: [12359, 10797, 12540]
+iteration: 12200	time: 0:01:19.097869	class counts: [12461, 10881, 12643]
+iteration: 12300	time: 0:01:15.970887	class counts: [12549, 10965, 12744]
+iteration: 12400	time: 0:01:25.753366	class counts: [12673, 11052, 12835]
+iteration: 12500	time: 0:01:27.647112	class counts: [12769, 11148, 12955]
+pred: 0	label: 1
+iteration: 12600	time: 0:01:17.216919	class counts: [12873, 11234, 13045]
+iteration: 12700	time: 0:01:21.066537	class counts: [12946, 11336, 13159]
+iteration: 12800	time: 0:01:20.296878	class counts: [13046, 11411, 13267]
+iteration: 12900	time: 0:01:23.931136	class counts: [13151, 11507, 13363]
+iteration: 13000	time: 0:01:24.944104	class counts: [13238, 11617, 13467]
+pred: 1	label: 1
+iteration: 13100	time: 0:01:17.703674	class counts: [13324, 11704, 13566]
+iteration: 13200	time: 0:01:20.483851	class counts: [13411, 11785, 13678]
+iteration: 13300	time: 0:01:21.130851	class counts: [13526, 11867, 13778]
+iteration: 13400	time: 0:01:26.468124	class counts: [13630, 11960, 13886]
+iteration: 13500	time: 0:01:28.826179	class counts: [13744, 12051, 13996]
+pred: 0	label: 1
+iteration: 13600	time: 0:01:22.012202	class counts: [13842, 12139, 14103]
+iteration: 13700	time: 0:01:20.740796	class counts: [13950, 12225, 14193]
+iteration: 13800	time: 0:01:17.330236	class counts: [14030, 12307, 14303]
+iteration: 13900	time: 0:01:18.341046	class counts: [14138, 12380, 14399]
+iteration: 14000	time: 0:01:27.996733	class counts: [14252, 12462, 14509]
+pred: 2	label: 1
+iteration: 14100	time: 0:01:22.675150	class counts: [14357, 12553, 14603]
+iteration: 14200	time: 0:01:22.496954	class counts: [14461, 12635, 14704]
+iteration: 14300	time: 0:01:22.974027	class counts: [14550, 12736, 14805]
+iteration: 14400	time: 0:01:33.385685	class counts: [14656, 12825, 14939]
+iteration: 14500	time: 0:01:19.849907	class counts: [14760, 12919, 15032]
+pred: 0	label: 1
+iteration: 14600	time: 0:01:28.979231	class counts: [14875, 13019, 15128]
+iteration: 14700	time: 0:01:26.514805	class counts: [14989, 13109, 15228]
+iteration: 14800	time: 0:01:20.616357	class counts: [15097, 13206, 15317]
+iteration: 14900	time: 0:01:24.267777	class counts: [15187, 13293, 15431]
+iteration: 15000	time: 0:01:23.269050	class counts: [15276, 13388, 15535]
+pred: 1	label: 1
+iteration: 15100	time: 0:01:28.168004	class counts: [15382, 13482, 15645]
+iteration: 15200	time: 0:01:26.867197	class counts: [15496, 13568, 15749]
+iteration: 15300	time: 0:01:23.554438	class counts: [15608, 13656, 15845]
+iteration: 15400	time: 0:01:32.659395	class counts: [15710, 13748, 15967]
+iteration: 15500	time: 0:01:16.419992	class counts: [15810, 13836, 16050]
+pred: 2	label: 1
+iteration: 15600	time: 0:01:30.782033	class counts: [15914, 13937, 16169]
+iteration: 15700	time: 0:01:23.896831	class counts: [16021, 14026, 16266]
+iteration: 15800	time: 0:01:20.227306	class counts: [16118, 14101, 16366]
+iteration: 15900	time: 0:01:27.479676	class counts: [16228, 14185, 16467]
+iteration: 16000	time: 0:01:21.321648	class counts: [16330, 14260, 16574]
+pred: 1	label: 1
+iteration: 16100	time: 0:01:25.270295	class counts: [16437, 14339, 16685]
+iteration: 16200	time: 0:01:20.786076	class counts: [16545, 14420, 16779]
+iteration: 16300	time: 0:01:29.450392	class counts: [16641, 14518, 16892]
+iteration: 16400	time: 0:01:31.058049	class counts: [16743, 14625, 16994]
+iteration: 16500	time: 0:01:18.677468	class counts: [16823, 14718, 17095]
+pred: 1	label: 1
+iteration: 16600	time: 0:01:31.152077	class counts: [16946, 14798, 17203]
+iteration: 16700	time: 0:01:16.253602	class counts: [17032, 14889, 17299]
+iteration: 16800	time: 0:01:25.495560	class counts: [17136, 14973, 17406]
+iteration: 16900	time: 0:01:27.126588	class counts: [17231, 15078, 17507]
+iteration: 17000	time: 0:01:15.832891	class counts: [17309, 15168, 17610]
+pred: 0	label: 1
+iteration: 17100	time: 0:01:27.763976	class counts: [17406, 15266, 17713]
+iteration: 17200	time: 0:01:25.041735	class counts: [17497, 15354, 17827]
+iteration: 17300	time: 0:01:21.223156	class counts: [17594, 15435, 17934]
+iteration: 17400	time: 0:01:27.341785	class counts: [17701, 15548, 18022]
+iteration: 17500	time: 0:01:38.174767	class counts: [17825, 15650, 18132]
+pred: 0	label: 1
+iteration: 17600	time: 0:01:23.402518	class counts: [17911, 15734, 18252]
+iteration: 17700	time: 0:01:12.795910	class counts: [17989, 15828, 18336]
+iteration: 17800	time: 0:01:14.908753	class counts: [18080, 15902, 18437]
+iteration: 17900	time: 0:01:32.783421	class counts: [18185, 16002, 18550]
+iteration: 18000	time: 0:01:30.904521	class counts: [18288, 16111, 18650]
+pred: 0	label: 0
+iteration: 18100	time: 0:01:21.150451	class counts: [18381, 16189, 18752]
+iteration: 18200	time: 0:01:13.654063	class counts: [18467, 16267, 18850]
+iteration: 18300	time: 0:01:27.928421	class counts: [18566, 16361, 18968]
+iteration: 18400	time: 0:01:22.377723	class counts: [18669, 16448, 19068]
+iteration: 18500	time: 0:01:26.249112	class counts: [18767, 16547, 19169]
+pred: 1	label: 1
+iteration: 18600	time: 0:01:15.921988	class counts: [18850, 16627, 19270]
+iteration: 18700	time: 0:01:27.984389	class counts: [18946, 16726, 19383]
+iteration: 18800	time: 0:01:16.070775	class counts: [19032, 16811, 19481]
+iteration: 18900	time: 0:01:24.532290	class counts: [19134, 16906, 19584]
+iteration: 19000	time: 0:01:22.429073	class counts: [19247, 16990, 19675]
+pred: 0	label: 1
+iteration: 19100	time: 0:01:32.498832	class counts: [19347, 17096, 19792]
+iteration: 19200	time: 0:01:12.335331	class counts: [19443, 17169, 19880]
+iteration: 19300	time: 0:01:33.284159	class counts: [19557, 17260, 20001]
+iteration: 19400	time: 0:01:22.155006	class counts: [19661, 17341, 20110]
+iteration: 19500	time: 0:01:22.214315	class counts: [19761, 17434, 20207]
+pred: 1	label: 1
+iteration: 19600	time: 0:01:18.044028	class counts: [19871, 17502, 20302]
+iteration: 19700	time: 0:01:29.092886	class counts: [19980, 17607, 20405]
+iteration: 19800	time: 0:01:31.134654	class counts: [20098, 17693, 20522]
+iteration: 19900	time: 0:01:18.690297	class counts: [20186, 17784, 20620]
+iteration: 20000	time: 0:01:23.820897	class counts: [20293, 17868, 20726]
+pred: 1	label: 1
+iteration: 20100	time: 0:01:22.744316	class counts: [20392, 17953, 20824]
+iteration: 20200	time: 0:01:31.898854	class counts: [20505, 18053, 20929]
+iteration: 20300	time: 0:01:18.578120	class counts: [20609, 18125, 21032]
+iteration: 20400	time: 0:01:20.699537	class counts: [20698, 18212, 21135]
+iteration: 20500	time: 0:01:19.848526	class counts: [20796, 18293, 21233]
+pred: 0	label: 1
+iteration: 20600	time: 0:01:23.688339	class counts: [20889, 18384, 21345]
+iteration: 20700	time: 0:01:20.082880	class counts: [20989, 18477, 21438]
+iteration: 20800	time: 0:01:25.694837	class counts: [21102, 18556, 21541]
+iteration: 20900	time: 0:01:29.541649	class counts: [21201, 18645, 21661]
+iteration: 21000	time: 0:01:20.602557	class counts: [21297, 18732, 21755]
+pred: 1	label: 1
+iteration: 21100	time: 0:01:24.108941	class counts: [21401, 18814, 21860]
+iteration: 21200	time: 0:01:22.763940	class counts: [21501, 18906, 21958]
+iteration: 21300	time: 0:01:21.541581	class counts: [21591, 19002, 22056]
+iteration: 21400	time: 0:01:24.068200	class counts: [21698, 19080, 22165]
+iteration: 21500	time: 0:01:25.845931	class counts: [21789, 19167, 22283]
+pred: 0	label: 1
+iteration: 21600	time: 0:01:31.552062	class counts: [21899, 19271, 22378]
+iteration: 21700	time: 0:01:21.586451	class counts: [21986, 19357, 22480]
+iteration: 21800	time: 0:01:25.352845	class counts: [22085, 19439, 22589]
+iteration: 21900	time: 0:01:23.708646	class counts: [22189, 19536, 22675]
+iteration: 22000	time: 0:01:35.571310	class counts: [22291, 19640, 22794]
+pred: 0	label: 1
+iteration: 22100	time: 0:01:24.565631	class counts: [22395, 19730, 22896]
+iteration: 22200	time: 0:01:26.074528	class counts: [22494, 19809, 23010]
+iteration: 22300	time: 0:01:19.875627	class counts: [22586, 19912, 23091]
+iteration: 22400	time: 0:01:31.082632	class counts: [22683, 19998, 23220]
+iteration: 22500	time: 0:01:17.966835	class counts: [22777, 20085, 23305]
+pred: 0	label: 1
+iteration: 22600	time: 0:01:43.038784	class counts: [22907, 20192, 23421]
+iteration: 22700	time: 0:01:28.517570	class counts: [23020, 20281, 23521]
+iteration: 22800	time: 0:01:24.880579	class counts: [23114, 20374, 23623]
+iteration: 22900	time: 0:01:23.027240	class counts: [23215, 20457, 23727]
+iteration: 23000	time: 0:01:17.302694	class counts: [23304, 20534, 23824]
+pred: 1	label: 1
+iteration: 23100	time: 0:01:23.990723	class counts: [23400, 20614, 23934]
+iteration: 23200	time: 0:01:23.206489	class counts: [23489, 20709, 24037]
+iteration: 23300	time: 0:01:24.212927	class counts: [23585, 20788, 24143]
+iteration: 23400	time: 0:01:32.591785	class counts: [23691, 20893, 24246]
+iteration: 23500	time: 0:01:29.581691	class counts: [23795, 21003, 24341]
+pred: 0	label: 1
+iteration: 23600	time: 0:01:22.469062	class counts: [23881, 21091, 24447]
+iteration: 23700	time: 0:01:27.138894	class counts: [23970, 21175, 24570]
+iteration: 23800	time: 0:01:23.015710	class counts: [24068, 21267, 24664]
+iteration: 23900	time: 0:01:24.635000	class counts: [24175, 21354, 24755]
+iteration: 24000	time: 0:01:30.447806	class counts: [24277, 21466, 24855]
+pred: 1	label: 1
+iteration: 24100	time: 0:01:33.427779	class counts: [24380, 21565, 24972]
+iteration: 24200	time: 0:01:30.291801	class counts: [24482, 21652, 25085]
+iteration: 24300	time: 0:01:24.097101	class counts: [24593, 21735, 25174]
+iteration: 24400	time: 0:01:28.470860	class counts: [24682, 21833, 25289]
+iteration: 24500	time: 0:01:23.087689	class counts: [24778, 21919, 25387]
+pred: 0	label: 1
+iteration: 24600	time: 0:01:30.383433	class counts: [24886, 22014, 25487]
+iteration: 24700	time: 0:01:32.573023	class counts: [25000, 22114, 25586]
+iteration: 24800	time: 0:01:27.224240	class counts: [25099, 22210, 25685]
+iteration: 24900	time: 0:01:26.199162	class counts: [25210, 22285, 25793]
+iteration: 25000	time: 0:01:21.516051	class counts: [25294, 22356, 25906]
+pred: 1	label: 1
+iteration: 25100	time: 0:01:27.318917	class counts: [25400, 22444, 26008]
+iteration: 25200	time: 0:01:18.449900	class counts: [25478, 22516, 26118]
+iteration: 25300	time: 0:01:21.170571	class counts: [25585, 22594, 26209]
+iteration: 25400	time: 0:01:31.739901	class counts: [25683, 22691, 26322]
+iteration: 25500	time: 0:01:29.355563	class counts: [25787, 22782, 26428]
+pred: 0	label: 1
+iteration: 25600	time: 0:01:26.565848	class counts: [25877, 22879, 26536]
+iteration: 25700	time: 0:01:34.458410	class counts: [26009, 22971, 26633]
+iteration: 25800	time: 0:01:28.735864	class counts: [26123, 23059, 26724]
+iteration: 25900	time: 0:01:28.527195	class counts: [26219, 23148, 26833]
+iteration: 26000	time: 0:01:31.064121	class counts: [26335, 23230, 26939]
+pred: 0	label: 1
+iteration: 26100	time: 0:01:30.698173	class counts: [26436, 23321, 27045]
+iteration: 26200	time: 0:01:22.680723	class counts: [26535, 23413, 27136]
+iteration: 26300	time: 0:01:33.325838	class counts: [26629, 23515, 27249]
+iteration: 26400	time: 0:01:32.253778	class counts: [26745, 23606, 27351]
+iteration: 26500	time: 0:01:22.392069	class counts: [26841, 23685, 27451]
+pred: 0	label: 1
+iteration: 26600	time: 0:01:24.537066	class counts: [26952, 23762, 27544]
+iteration: 26700	time: 0:01:26.571348	class counts: [27040, 23844, 27663]
+iteration: 26800	time: 0:01:23.787617	class counts: [27133, 23928, 27767]
+iteration: 26900	time: 0:01:26.328939	class counts: [27241, 24015, 27856]
+iteration: 27000	time: 0:01:28.582732	class counts: [27331, 24114, 27963]
+pred: 0	label: 1
+iteration: 27100	time: 0:01:32.550547	class counts: [27419, 24218, 28076]
+iteration: 27200	time: 0:01:25.425442	class counts: [27524, 24303, 28169]
+iteration: 27300	time: 0:01:31.142910	class counts: [27615, 24387, 28293]
+iteration: 27400	time: 0:01:30.845854	class counts: [27721, 24480, 28392]
+iteration: 27500	time: 0:01:34.320114	class counts: [27830, 24583, 28493]
+pred: 1	label: 1
+iteration: 27600	time: 0:01:21.222652	class counts: [27916, 24670, 28589]
+iteration: 27700	time: 0:01:33.350876	class counts: [28008, 24779, 28696]
+iteration: 27800	time: 0:01:32.321372	class counts: [28104, 24880, 28800]
+iteration: 27900	time: 0:01:29.474702	class counts: [28200, 24976, 28900]
+iteration: 28000	time: 0:01:26.444826	class counts: [28300, 25048, 29015]
+pred: 0	label: 1
+iteration: 28100	time: 0:01:32.692422	class counts: [28418, 25141, 29108]
+iteration: 28200	time: 0:01:28.603605	class counts: [28514, 25234, 29214]
+iteration: 28300	time: 0:01:33.673997	class counts: [28618, 25327, 29320]
+iteration: 28400	time: 0:01:23.280118	class counts: [28725, 25404, 29411]
+iteration: 28500	time: 0:01:32.086723	class counts: [28813, 25498, 29528]
+pred: 0	label: 1
+iteration: 28600	time: 0:01:33.721370	class counts: [28912, 25595, 29635]
+iteration: 28700	time: 0:01:29.624692	class counts: [29022, 25680, 29735]
+iteration: 28800	time: 0:01:22.261213	class counts: [29111, 25753, 29838]
+iteration: 28900	time: 0:01:28.394872	class counts: [29195, 25848, 29948]
+iteration: 29000	time: 0:01:24.338605	class counts: [29303, 25918, 30044]
+pred: 0	label: 1
+iteration: 29100	time: 0:01:33.957020	class counts: [29419, 26013, 30141]
+iteration: 29200	time: 0:01:40.436504	class counts: [29530, 26118, 30246]
+iteration: 29300	time: 0:01:25.754868	class counts: [29620, 26198, 30349]
+iteration: 29400	time: 0:01:27.862014	class counts: [29709, 26284, 30459]
+iteration: 29500	time: 0:01:31.300250	class counts: [29818, 26368, 30564]
+pred: 0	label: 1
+iteration: 29600	time: 0:01:25.456454	class counts: [29903, 26455, 30665]
+iteration: 29700	time: 0:01:34.519384	class counts: [30005, 26544, 30781]
+iteration: 29800	time: 0:01:31.089380	class counts: [30115, 26625, 30880]
+iteration: 29900	time: 0:01:26.564371	class counts: [30210, 26705, 30980]
+time end: 2017-12-14 02:49:46.952121
