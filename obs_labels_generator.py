@@ -126,9 +126,9 @@ if __name__ == '__main__':
     # Generate Model
     # if building model from a checkpoint define location here. Otherwise use empty string ""
     aud_dqn_chkpnt = "aud_classifier/itbn_aud_final/model.ckpt"
-    # opt_dqn_chkpnt = "opt_classifier/itbn_opt_final/model.ckpt"
+    opt_dqn_chkpnt = "opt_classifier/itbn_opt_final/model.ckpt"
     aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
-    # opt_dqn = opt_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=opt_dqn_chkpnt)
+    opt_dqn = opt_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=opt_dqn_chkpnt)
 
     # Train Model
     aud_coord = tf.train.Coordinator()
