@@ -215,7 +215,7 @@ if __name__ == '__main__':
                         opt_matrix[real_class][selected_class] += 1
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
                         opt_pred_sequence += SEQUENCE_CHARS[selected_class]
-            # aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
+            aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
             opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
 
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
