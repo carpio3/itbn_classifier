@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
     # Read contents of TFRecord file
     # generate list of filenames
-    path = "../../ITBN_tfrecords/"
+    path = "../ITBN_tfrecords/"
     filenames = list()
     for root, dir, files in os.walk(path):
         for f in files:
