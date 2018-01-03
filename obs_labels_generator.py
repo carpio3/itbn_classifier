@@ -1,5 +1,6 @@
 # helper methods
 import os
+import time
 from datetime import datetime
 
 # model structure
@@ -128,6 +129,7 @@ if __name__ == '__main__':
     aud_dqn_chkpnt = "aud_classifier/itbn_aud_final/model.ckpt"
     opt_dqn_chkpnt = "opt_classifier/itbn_opt_final/model.ckpt"
     aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
+    time.sleep(50)
     opt_dqn = opt_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=opt_dqn_chkpnt)
 
     # Train Model
