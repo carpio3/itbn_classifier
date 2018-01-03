@@ -1,19 +1,23 @@
 # helper methods
 import os
-import sys
 from datetime import datetime
 
 # model structure
 from opt_classifier import *
+from aud_classifier import *
+
 # file io
 from common.itbn_pipeline import *
 
-TAG = "itbn_opt"
+AUD_TAG = "itbn_aud"
+OPT_TAG = "itbn_opt"
 
 ALPHA = 1e-5
 
-FRAME_SIZE = 45
-STRIDE = 20
+FRAME_SIZE = 20
+STRIDE = 7
+FRAME_SIZE = 20
+STRIDE = 7
 
 SEQUENCE_CHARS = ["_", "|", "*"]
 interval_relation_map = {
@@ -47,8 +51,8 @@ def overlaps(s_time, e_time, td, label):
 
 
 def label_data(frame_size, stride, frame_num, seq_len, timing_dict):
-    opt_label_data = np.zeros((BATCH_SIZE, OPT_CLASSES)).astype(float)
-    opt_label = 0
+    aud_label_data = np.zeros((BATCH_SIZE, AUD_CLASSES)).astype(float)
+    aud_label = 0
 
     s_frame = stride * frame_num
     e_frame = s_frame + frame_size
@@ -57,20 +61,24 @@ def label_data(frame_size, stride, frame_num, seq_len, timing_dict):
         e_frame = seq_len
 
     if overlaps(s_frame, e_frame, timing_dict, "command"):
-        opt_label = 1
+        aud_label = 1
     if overlaps(s_frame, e_frame, timing_dict, "prompt"):
-        opt_label = 1
+        aud_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "reward"):
+        aud_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "abort"):
+        aud_label = 1
     if overlaps(s_frame, e_frame, timing_dict, "noise_0"):
-        opt_label = 1
+        aud_label = 1
     if overlaps(s_frame, e_frame, timing_dict, "noise_1"):
-        opt_label = 1
-    if overlaps(s_frame, e_frame, timing_dict, "gesture_0"):
-        opt_label = 2
-    if overlaps(s_frame, e_frame, timing_dict, "gesture_1"):
-        opt_label = 2
+        aud_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "audio_0"):
+        aud_label = 2
+    if overlaps(s_frame, e_frame, timing_dict, "audio_1"):
+        aud_label = 2
 
-    opt_label_data[0][opt_label] = 1
-    return opt_label_data
+    aud_label_data[0][aud_label] = 1
+    return aud_label_data
 
 
 if __name__ == '__main__':
@@ -90,7 +98,7 @@ if __name__ == '__main__':
 
     # Generate Model
     # if building model from a checkpoint define location here. Otherwise use empty string ""
-    dqn_chkpnt = "itbn_opt_final/model.ckpt"
+    dqn_chkpnt = "itbn_aud_final/model.ckpt"
     dqn = ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=dqn_chkpnt)
 
     # Train Model
@@ -135,15 +143,15 @@ if __name__ == '__main__':
 
             for i in range(num_chunks):
                 # Label Data
-                opt_label_data = label_data(FRAME_SIZE, STRIDE, i, seq_len, timing_dict)
+                aud_label_data = label_data(FRAME_SIZE, STRIDE, i, seq_len, timing_dict)
                 vals = {
                     dqn.seq_length_ph: seq_len,
-                    dqn.pnt_ph: np.expand_dims(opt_raw[0][STRIDE * i:STRIDE * i + FRAME_SIZE], 0),
-                    dqn.pnt_y_ph: opt_label_data
+                    dqn.aud_ph: np.expand_dims(aud_raw[0][STRIDE * i:STRIDE * i + FRAME_SIZE], 0),
+                    dqn.aud_y_ph: aud_label_data
                 }
-                opt_pred = dqn.sess.run([dqn.wave_observed], feed_dict=vals)
-                real_class = int(np.argmax(opt_label_data))
-                selected_class = int(opt_pred[0][0])
+                aud_pred = dqn.sess.run([dqn.aud_observed], feed_dict=vals)
+                real_class = int(np.argmax(aud_label_data))
+                selected_class = int(aud_pred[0][0])
                 matrix[real_class][selected_class] += 1
                 real_sequence += SEQUENCE_CHARS[real_class]
                 pred_sequence += SEQUENCE_CHARS[selected_class]
