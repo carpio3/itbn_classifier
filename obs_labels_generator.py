@@ -170,7 +170,7 @@ if __name__ == '__main__':
         #     [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
 
         name = name[0].replace('.txt', '_validation.tfrecord').replace(
-            '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../../ITBN_tfrecords/')
+            '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../ITBN_tfrecords/')
         if name in filenames:
             counter += 1
             print("processing {}/{}: {}".format(counter, num_files, name))
