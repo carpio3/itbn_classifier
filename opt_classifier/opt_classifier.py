@@ -23,76 +23,77 @@ class ClassifierModel:
     learning_rate - float, speed at which the model trains (1e-5 by default)
     """
     def __init__(self, batch_size=1, filename="", learning_rate=1e-5):
-        self.__batch_size = batch_size
-        self.__alpha = learning_rate
+        self.graph = tf.Graph()
+        with self.graph.as_default():
+            self.__batch_size = batch_size
+            self.__alpha = learning_rate
 
-        # Model variables
-        def weight_variable(name, shape):
-            initial = tf.truncated_normal(shape, stddev=0.1)
-            return tf.Variable(initial, name=name)
+            # Model variables
+            def weight_variable(name, shape):
+                initial = tf.truncated_normal(shape, stddev=0.1)
+                return tf.Variable(initial, name=name)
 
-        def bias_variable(name, shape):
-            initial = tf.constant(0.1, shape=shape)
-            return tf.Variable(initial, name=name)
+            def bias_variable(name, shape):
+                initial = tf.constant(0.1, shape=shape)
+                return tf.Variable(initial, name=name)
 
-        # Q variables
-        self.variables_pnt = {
-            "W1": weight_variable("W_conv1_pnt", [filter_sizes[0], filter_sizes[0],
-                                                  pnt_dtype["num_c"], layer_elements[1]]),
-            "b1": bias_variable("b_conv1_pnt", [layer_elements[1]]),
-            "W2": weight_variable("W_conv2_pnt", [filter_sizes[1], filter_sizes[1],
-                                                  layer_elements[1], layer_elements[2]]),
-            "b2": bias_variable("b_conv2_pnt", [layer_elements[2]]),
-            "W3": weight_variable("W_conv3_pnt", [filter_sizes[2], filter_sizes[2],
-                                                  layer_elements[2], layer_elements[-2]]),
-            "b3": bias_variable("b_conv3_pnt", [layer_elements[-2]]),
-            "W_lstm": weight_variable("W_lstm", [layer_elements[-2], layer_elements[-1]]),
-            "b_lstm": bias_variable("b_lstm", [layer_elements[-1]]),
-            "W_fc": weight_variable("W_fc", [layer_elements[-1] + 1, layer_elements[-1]]),
-            "b_fc": bias_variable("b_fc", [layer_elements[-1]])
-        }
+            # Q variables
+            self.variables_pnt = {
+                "W1": weight_variable("W_conv1_pnt", [filter_sizes[0], filter_sizes[0],
+                                                      pnt_dtype["num_c"], layer_elements[1]]),
+                "b1": bias_variable("b_conv1_pnt", [layer_elements[1]]),
+                "W2": weight_variable("W_conv2_pnt", [filter_sizes[1], filter_sizes[1],
+                                                      layer_elements[1], layer_elements[2]]),
+                "b2": bias_variable("b_conv2_pnt", [layer_elements[2]]),
+                "W3": weight_variable("W_conv3_pnt", [filter_sizes[2], filter_sizes[2],
+                                                      layer_elements[2], layer_elements[-2]]),
+                "b3": bias_variable("b_conv3_pnt", [layer_elements[-2]]),
+                "W_lstm": weight_variable("W_lstm", [layer_elements[-2], layer_elements[-1]]),
+                "b_lstm": bias_variable("b_lstm", [layer_elements[-1]]),
+                "W_fc": weight_variable("W_fc", [layer_elements[-1] + 1, layer_elements[-1]]),
+                "b_fc": bias_variable("b_fc", [layer_elements[-1]])
+            }
 
-        # Placeholder variables
-        # placeholder for the Optical Flow data
-        self.pnt_ph = tf.placeholder("float",
-                                     [self.__batch_size, None,
-                                      pnt_dtype["cmp_h"] * pnt_dtype["cmp_w"] * pnt_dtype["num_c"]],
-                                     name="pnt_placeholder")
+            # Placeholder variables
+            # placeholder for the Optical Flow data
+            self.pnt_ph = tf.placeholder("float",
+                                         [self.__batch_size, None,
+                                          pnt_dtype["cmp_h"] * pnt_dtype["cmp_w"] * pnt_dtype["num_c"]],
+                                         name="pnt_placeholder")
 
-        # placeholder for the sequence length
-        self.seq_length_ph = tf.placeholder("int32", [self.__batch_size],
-                                            name="seq_len_placeholder")
+            # placeholder for the sequence length
+            self.seq_length_ph = tf.placeholder("int32", [self.__batch_size],
+                                                name="seq_len_placeholder")
 
-        # placeholder for the reward values to classify with
-        self.pnt_y_ph = tf.placeholder("float", [None, OPT_CLASSES], name="pnt_y_placeholder")
+            # placeholder for the reward values to classify with
+            self.pnt_y_ph = tf.placeholder("float", [None, OPT_CLASSES], name="pnt_y_placeholder")
 
-        # Build Model Structure
-        # initialize all variables in the network
-        self.pred_wave_set = self.execute_wave_var_set()  # used to initialize variables
+            # Build Model Structure
+            # initialize all variables in the network
+            self.pred_wave_set = self.execute_wave_var_set()  # used to initialize variables
 
-        # Q-value Generation Functions
-        # return the action with the highest q-value
-        self.wave_observed = tf.argmax(self.execute_wave(), 1)
+            # Q-value Generation Functions
+            # return the action with the highest q-value
+            self.wave_observed = tf.argmax(self.execute_wave(), 1)
 
-        # Optimization Functions
-        # get the difference between the q-values and the true output
-        self.cross_entropy_wave = tf.nn.softmax_cross_entropy_with_logits(
-            labels=self.pnt_y_ph, logits=self.execute_wave())
-        # optimize the network
-        self.optimizer_wave = tf.train.AdamOptimizer(learning_rate=self.__alpha).minimize(
-            self.cross_entropy_wave)
+            # Optimization Functions
+            # get the difference between the q-values and the true output
+            self.cross_entropy_wave = tf.nn.softmax_cross_entropy_with_logits(
+                labels=self.pnt_y_ph, logits=self.execute_wave())
+            # optimize the network
+            self.optimizer_wave = tf.train.AdamOptimizer(learning_rate=self.__alpha).minimize(
+                self.cross_entropy_wave)
 
-        # Evaluation Functions
-        # return a boolean indicating whether the system correctly predicted the output
-        self.correct_pred_wave = tf.equal(tf.argmax(self.wave_observed, 1),
-                                          tf.argmax(self.pnt_y_ph, 1))
+            # Evaluation Functions
+            # return a boolean indicating whether the system correctly predicted the output
+            self.correct_pred_wave = tf.equal(tf.argmax(self.wave_observed, 1),
+                                              tf.argmax(self.pnt_y_ph, 1))
 
-        # the accuracy of the current batch
-        self.accuracy_wave = tf.reduce_mean(tf.cast(self.correct_pred_wave, tf.float32))
+            # the accuracy of the current batch
+            self.accuracy_wave = tf.reduce_mean(tf.cast(self.correct_pred_wave, tf.float32))
 
         # Initialization
         # Generate Session
-        self.graph = tf.Graph()
         self.sess = tf.InteractiveSession(graph=self.graph)
 
         # Variable for generating a save checkpoint

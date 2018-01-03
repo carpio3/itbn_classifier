@@ -22,84 +22,85 @@ class ClassifierModel:
     learning_rate - float, speed at which the model trains (1e-5 by default)
     """
     def __init__(self, batch_size=1, filename="", learning_rate=1e-5):
-        self.__batch_size = batch_size
-        self.__alpha = learning_rate
+        self.graph = tf.Graph()
+        with self.graph.as_default():
+            self.__batch_size = batch_size
+            self.__alpha = learning_rate
 
-        # Model variables
-        def weight_variable(name, shape):
-            initial = tf.truncated_normal(shape, stddev=0.1)
-            return tf.Variable(initial, name=name)
+            # Model variables
+            def weight_variable(name, shape):
+                initial = tf.truncated_normal(shape, stddev=0.1)
+                return tf.Variable(initial, name=name)
 
-        def bias_variable(name, shape):
-            initial = tf.constant(0.1, shape=shape)
-            return tf.Variable(initial, name=name)
+            def bias_variable(name, shape):
+                initial = tf.constant(0.1, shape=shape)
+                return tf.Variable(initial, name=name)
 
-        # Q variables
-        self.variables_aud = {
-            "W1": weight_variable("W_conv1_aud", [aud_filter_sizes[0][0],
-                                                  aud_filter_sizes[0][1],
-                                                  aud_dtype["num_c"],
-                                                  aud_layer_elements[1]]),
-            "b1": bias_variable("b_conv1_aud", [aud_layer_elements[1]]),
-            "W2": weight_variable("W_conv2_aud", [aud_filter_sizes[1][0],
-                                                  aud_filter_sizes[1][1],
-                                                  aud_layer_elements[1],
-                                                  aud_layer_elements[2]]),
-            "b2": bias_variable("b_conv2_aud", [aud_layer_elements[2]]),
-            "W3": weight_variable("W_conv3_aud", [aud_filter_sizes[2][0],
-                                                  aud_filter_sizes[2][1],
-                                                  aud_layer_elements[2],
-                                                  aud_layer_elements[3]]),
-            "b3": bias_variable("b_conv3_aud", [aud_layer_elements[3]]),
-            "W_lstm": weight_variable("W_lstm", [aud_layer_elements[-2],
+            # Q variables
+            self.variables_aud = {
+                "W1": weight_variable("W_conv1_aud", [aud_filter_sizes[0][0],
+                                                      aud_filter_sizes[0][1],
+                                                      aud_dtype["num_c"],
+                                                      aud_layer_elements[1]]),
+                "b1": bias_variable("b_conv1_aud", [aud_layer_elements[1]]),
+                "W2": weight_variable("W_conv2_aud", [aud_filter_sizes[1][0],
+                                                      aud_filter_sizes[1][1],
+                                                      aud_layer_elements[1],
+                                                      aud_layer_elements[2]]),
+                "b2": bias_variable("b_conv2_aud", [aud_layer_elements[2]]),
+                "W3": weight_variable("W_conv3_aud", [aud_filter_sizes[2][0],
+                                                      aud_filter_sizes[2][1],
+                                                      aud_layer_elements[2],
+                                                      aud_layer_elements[3]]),
+                "b3": bias_variable("b_conv3_aud", [aud_layer_elements[3]]),
+                "W_lstm": weight_variable("W_lstm", [aud_layer_elements[-2],
+                                                     aud_layer_elements[-1]]),
+                "b_lstm": bias_variable("b_lstm", [aud_layer_elements[-1]]),
+                "W_fc": weight_variable("W_fc", [aud_layer_elements[-1] + 1,
                                                  aud_layer_elements[-1]]),
-            "b_lstm": bias_variable("b_lstm", [aud_layer_elements[-1]]),
-            "W_fc": weight_variable("W_fc", [aud_layer_elements[-1] + 1,
-                                             aud_layer_elements[-1]]),
-            "b_fc": bias_variable("b_fc", [aud_layer_elements[-1]])
-        }
+                "b_fc": bias_variable("b_fc", [aud_layer_elements[-1]])
+            }
 
-        # Placeholder variables
-        # placeholder for the Audio data
-        self.aud_ph = tf.placeholder("float",
-                                     [self.__batch_size, None,
-                                      aud_dtype["cmp_h"] * aud_dtype["cmp_w"] * aud_dtype["num_c"]],
-                                     name="aud_placeholder")
+            # Placeholder variables
+            # placeholder for the Audio data
+            self.aud_ph = tf.placeholder("float",
+                                         [self.__batch_size, None,
+                                          aud_dtype["cmp_h"] * aud_dtype["cmp_w"] * aud_dtype["num_c"]],
+                                         name="aud_placeholder")
 
-        # placeholder for the sequence length
-        self.seq_length_ph = tf.placeholder("int32", [self.__batch_size],
-                                            name="seq_len_placeholder")
+            # placeholder for the sequence length
+            self.seq_length_ph = tf.placeholder("int32", [self.__batch_size],
+                                                name="seq_len_placeholder")
 
-        # placeholder for the reward values to classify with
-        self.aud_y_ph = tf.placeholder("float", [None, AUD_CLASSES], name="aud_y_placeholder")
+            # placeholder for the reward values to classify with
+            self.aud_y_ph = tf.placeholder("float", [None, AUD_CLASSES], name="aud_y_placeholder")
 
-        # Build Model Structure
-        # initialize all variables in the network
-        self.pred_aud_set = self.execute_aud_var_set()  # used to initialize variables
+            # Build Model Structure
+            # initialize all variables in the network
+            self.pred_aud_set = self.execute_aud_var_set()  # used to initialize variables
 
-        # Q-value Generation Functions
-        # return the action with the highest q-value
-        self.aud_observed = tf.argmax(self.execute_aud(), 1)
+            # Q-value Generation Functions
+            # return the action with the highest q-value
+            self.aud_observed = tf.argmax(self.execute_aud(), 1)
 
-        # Optimization Functions
-        # get the difference between the q-values and the true output
-        self.cross_entropy_aud = tf.nn.softmax_cross_entropy_with_logits(labels=self.aud_y_ph,
-                                                                         logits=self.execute_aud())
-        # optimize the network
-        self.optimizer_aud = tf.train.AdamOptimizer(learning_rate=self.__alpha).minimize(
-            self.cross_entropy_aud)
+            # Optimization Functions
+            # get the difference between the q-values and the true output
+            self.cross_entropy_aud = tf.nn.softmax_cross_entropy_with_logits(labels=self.aud_y_ph,
+                                                                             logits=self.execute_aud())
+            # optimize the network
+            self.optimizer_aud = tf.train.AdamOptimizer(learning_rate=self.__alpha).minimize(
+                self.cross_entropy_aud)
 
-        # Evaluation Functions
-        # return a boolean indicating whether the system correctly predicted the output
-        self.correct_pred_aud = tf.equal(tf.argmax(self.aud_observed, 1),
-                                         tf.argmax(self.aud_y_ph, 1))
+            # Evaluation Functions
+            # return a boolean indicating whether the system correctly predicted the output
+            self.correct_pred_aud = tf.equal(tf.argmax(self.aud_observed, 1),
+                                             tf.argmax(self.aud_y_ph, 1))
 
-        # the accuracy of the current batch
-        self.accuracy_aud = tf.reduce_mean(tf.cast(self.correct_pred_aud, tf.float32))
+            # the accuracy of the current batch
+            self.accuracy_aud = tf.reduce_mean(tf.cast(self.correct_pred_aud, tf.float32))
 
         # Initialization
         # Generate Session
-        self.graph = tf.Graph()
         self.sess = tf.InteractiveSession(graph=self.graph)
 
         # Variable for generating a save checkpoint
