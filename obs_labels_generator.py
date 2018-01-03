@@ -1,6 +1,5 @@
 # helper methods
 import os
-import time
 from datetime import datetime
 
 # model structure
@@ -128,9 +127,8 @@ if __name__ == '__main__':
     # if building model from a checkpoint define location here. Otherwise use empty string ""
     aud_dqn_chkpnt = "aud_classifier/itbn_aud_final/model.ckpt"
     opt_dqn_chkpnt = "opt_classifier/itbn_opt_final/model.ckpt"
-    aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
+    # aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
     opt_dqn = opt_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=opt_dqn_chkpnt)
-    time.sleep(5)
 
     # Train Model
     # aud_coord = tf.train.Coordinator()
@@ -154,6 +152,8 @@ if __name__ == '__main__':
     opt_dqn.sess.run(tf.local_variables_initializer())
     opt_dqn.sess.graph.finalize()
     threads = tf.train.start_queue_runners(coord=opt_coord, sess=opt_dqn.sess)
+
+    aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
 
     print("Num epochs: {}\nBatch Size: {}\nNum Files: {}".format(NUM_EPOCHS, BATCH_SIZE, len(filenames)))
 
