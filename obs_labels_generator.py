@@ -166,6 +166,9 @@ if __name__ == '__main__':
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = aud_dqn.sess.run(
             [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
 
+        seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
+            [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
+
         name = name[0].replace('.txt', '_validation.tfrecord').replace(
             '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../../ITBN_tfrecords/')
         if name in filenames:
