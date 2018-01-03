@@ -92,7 +92,7 @@ class ClassifierModel:
 
         # Initialization
         # Generate Session
-        self.sess = tf.InteractiveSession()
+        self.sess = tf.Session()
 
         # Variable for generating a save checkpoint
         self.saver = tf.train.Saver()

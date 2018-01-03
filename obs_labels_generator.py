@@ -149,7 +149,6 @@ if __name__ == '__main__':
     # aud_dqn.sess.graph.finalize()
     # threads = tf.train.start_queue_runners(coord=aud_coord, sess=aud_dqn.sess)
 
-    aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
     opt_dqn.sess.run(tf.local_variables_initializer())
     opt_dqn.sess.graph.finalize()
     threads = tf.train.start_queue_runners(coord=opt_coord, sess=opt_dqn.sess)
