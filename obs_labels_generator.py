@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 
 # model structure
-from opt_classifier import *
-from aud_classifier import *
+from opt_classifier import opt_classifier
+from aud_classifier import aud_classifier
 
 # file io
 from common.itbn_pipeline import *
@@ -14,10 +14,10 @@ OPT_TAG = "itbn_opt"
 
 ALPHA = 1e-5
 
-FRAME_SIZE = 20
-STRIDE = 7
-FRAME_SIZE = 20
-STRIDE = 7
+AUD_FRAME_SIZE = 20
+AUD_STRIDE = 7
+OPT_FRAME_SIZE = 45
+OPT_STRIDE = 20
 
 SEQUENCE_CHARS = ["_", "|", "*"]
 interval_relation_map = {
@@ -50,7 +50,7 @@ def overlaps(s_time, e_time, td, label):
     return False
 
 
-def label_data(frame_size, stride, frame_num, seq_len, timing_dict):
+def label_data_aud(frame_size, stride, frame_num, seq_len, timing_dict):
     aud_label_data = np.zeros((BATCH_SIZE, AUD_CLASSES)).astype(float)
     aud_label = 0
 
@@ -81,6 +81,33 @@ def label_data(frame_size, stride, frame_num, seq_len, timing_dict):
     return aud_label_data
 
 
+def label_data_opt(frame_size, stride, frame_num, seq_len, timing_dict):
+    opt_label_data = np.zeros((BATCH_SIZE, OPT_CLASSES)).astype(float)
+    opt_label = 0
+
+    s_frame = stride * frame_num
+    e_frame = s_frame + frame_size
+
+    if e_frame > seq_len:
+        e_frame = seq_len
+
+    if overlaps(s_frame, e_frame, timing_dict, "command"):
+        opt_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "prompt"):
+        opt_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "noise_0"):
+        opt_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "noise_1"):
+        opt_label = 1
+    if overlaps(s_frame, e_frame, timing_dict, "gesture_0"):
+        opt_label = 2
+    if overlaps(s_frame, e_frame, timing_dict, "gesture_1"):
+        opt_label = 2
+
+    opt_label_data[0][opt_label] = 1
+    return opt_label_data
+
+
 if __name__ == '__main__':
     print("time start: {}".format(datetime.now()))
 
@@ -98,11 +125,14 @@ if __name__ == '__main__':
 
     # Generate Model
     # if building model from a checkpoint define location here. Otherwise use empty string ""
-    dqn_chkpnt = "itbn_aud_final/model.ckpt"
-    dqn = ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=dqn_chkpnt)
+    aud_dqn_chkpnt = "aud_classifier/itbn_aud_final/model.ckpt"
+    opt_dqn_chkpnt = "opt_classifier/itbn_opt_final/model.ckpt"
+    aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=aud_dqn_chkpnt)
+    opt_dqn = opt_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=opt_dqn_chkpnt)
 
     # Train Model
-    coord = tf.train.Coordinator()
+    aud_coord = tf.train.Coordinator()
+    opt_coord = tf.train.Coordinator()
     '''
     sequence length
     optical raw
@@ -115,21 +145,27 @@ if __name__ == '__main__':
         input_pipeline(filenames)
 
     # initialize all variables
-    dqn.sess.run(tf.local_variables_initializer())
-    dqn.sess.graph.finalize()
-    threads = tf.train.start_queue_runners(coord=coord, sess=dqn.sess)
+    aud_dqn.sess.run(tf.local_variables_initializer())
+    aud_dqn.sess.graph.finalize()
+    threads = tf.train.start_queue_runners(coord=aud_coord, sess=aud_dqn.sess)
 
-    print("Num epochs: {}\nBatch Size: {}\nNum Files: {}".format(
-        NUM_EPOCHS, BATCH_SIZE, len(filenames)))
+    opt_dqn.sess.run(tf.local_variables_initializer())
+    opt_dqn.sess.graph.finalize()
+    threads = tf.train.start_queue_runners(coord=opt_coord, sess=opt_dqn.sess)
 
-    matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    print("Num epochs: {}\nBatch Size: {}\nNum Files: {}".format(NUM_EPOCHS, BATCH_SIZE, len(filenames)))
+
+    aud_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    opt_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     num_files = len(filenames)
     counter = 0
-    sequences = dict()
+    aud_sequences = dict()
+    opt_sequences = dict()
     while len(filenames) > 0:
         # read a batch of tfrecords into np arrays
-        seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = dqn.sess.run(
+        seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = aud_dqn.sess.run(
             [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
+
         name = name[0].replace('.txt', '_validation.tfrecord').replace(
             '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../../ITBN_tfrecords/')
         if name in filenames:
@@ -137,32 +173,52 @@ if __name__ == '__main__':
             print("processing {}/{}: {}".format(counter, num_files, name))
             filenames.remove(name)
             timing_dict = parse_timing_dict(timing_labels[0], timing_values[0])
-            num_chunks = (seq_len - FRAME_SIZE) / STRIDE + 1
-            real_sequence = ""
-            pred_sequence = ""
+            aud_num_chunks = (seq_len - AUD_FRAME_SIZE) / AUD_STRIDE + 1
+            opt_num_chunks = (seq_len - OPT_FRAME_SIZE) / OPT_STRIDE + 1
+            aud_real_sequence = ""
+            aud_pred_sequence = ""
+            opt_real_sequence = ""
+            opt_pred_sequence = ""
 
-            for i in range(num_chunks):
-                # Label Data
-                aud_label_data = label_data(FRAME_SIZE, STRIDE, i, seq_len, timing_dict)
-                vals = {
-                    dqn.seq_length_ph: seq_len,
-                    dqn.aud_ph: np.expand_dims(aud_raw[0][STRIDE * i:STRIDE * i + FRAME_SIZE], 0),
-                    dqn.aud_y_ph: aud_label_data
-                }
-                aud_pred = dqn.sess.run([dqn.aud_observed], feed_dict=vals)
-                real_class = int(np.argmax(aud_label_data))
-                selected_class = int(aud_pred[0][0])
-                matrix[real_class][selected_class] += 1
-                real_sequence += SEQUENCE_CHARS[real_class]
-                pred_sequence += SEQUENCE_CHARS[selected_class]
-            sequences[name] = real_sequence + "\n" + pred_sequence
+            for i in range(max(opt_num_chunks, aud_num_chunks)):
+                if i < aud_num_chunks:
+                    # Label Data
+                    aud_label_data = label_data_aud(AUD_FRAME_SIZE, AUD_STRIDE, i, seq_len, timing_dict)
+                    vals = {
+                        aud_dqn.seq_length_ph: seq_len,
+                        aud_dqn.aud_ph: np.expand_dims(aud_raw[0][AUD_STRIDE * i:AUD_STRIDE * i + AUD_FRAME_SIZE], 0),
+                        aud_dqn.aud_y_ph: aud_label_data
+                    }
+                    aud_pred = aud_dqn.sess.run([aud_dqn.aud_observed], feed_dict=vals)
+                    real_class = int(np.argmax(aud_label_data))
+                    selected_class = int(aud_pred[0][0])
+                    aud_matrix[real_class][selected_class] += 1
+                    aud_real_sequence += SEQUENCE_CHARS[real_class]
+                    aud_pred_sequence += SEQUENCE_CHARS[selected_class]
+                if i < opt_num_chunks:
+                    # Label Data
+                    opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE, i, seq_len, timing_dict)
+                    vals = {
+                        opt_dqn.seq_length_ph: seq_len,
+                        opt_dqn.pnt_ph: np.expand_dims(opt_raw[0][OPT_STRIDE * i:OPT_STRIDE * i + OPT_FRAME_SIZE], 0),
+                        opt_dqn.pnt_y_ph: opt_label_data
+                    }
+                    opt_pred = opt_dqn.sess.run([opt_dqn.wave_observed], feed_dict=vals)
+                    real_class = int(np.argmax(opt_label_data))
+                    selected_class = int(opt_pred[0][0])
+                    opt_matrix[real_class][selected_class] += 1
+                    opt_real_sequence += SEQUENCE_CHARS[real_class]
+                    opt_pred_sequence += SEQUENCE_CHARS[selected_class]
+            aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
+            opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
 
-    print("time end: {}\n{}\n".format(datetime.now(), matrix))
+    print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
 
     strings = ['.tfrecord', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_', '-', "../../ITBN_tfrecords/test_", 'validation']
-    for f in sequences.keys():
-        original = f
-        # for s in strings:
-        #     f = f.replace(s, '')
-        # if 'a' in f:
-        print("{}\n{}\n".format(original, sequences[original]))
+    print("\n\nAUDIO SEQUENCES:")
+    for f in aud_sequences.keys():
+        print("{}\n{}\n".format(f, aud_sequences[f]))
+
+    print("\n\nVIDEO SEQUENCES:")
+    for f in opt_sequences.keys():
+        print("{}\n{}\n".format(f, opt_sequences[f]))
