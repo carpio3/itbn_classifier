@@ -131,7 +131,7 @@ if __name__ == '__main__':
     opt_dqn = opt_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA, filename=opt_dqn_chkpnt)
 
     # Train Model
-    # aud_coord = tf.train.Coordinator()
+    aud_coord = tf.train.Coordinator()
     opt_coord = tf.train.Coordinator()
     '''
     sequence length
@@ -145,9 +145,9 @@ if __name__ == '__main__':
         input_pipeline(filenames)
 
     # initialize all variables
-    # aud_dqn.sess.run(tf.local_variables_initializer())
-    # aud_dqn.sess.graph.finalize()
-    # threads = tf.train.start_queue_runners(coord=aud_coord, sess=aud_dqn.sess)
+    aud_dqn.sess.run(tf.local_variables_initializer())
+    aud_dqn.sess.graph.finalize()
+    threads = tf.train.start_queue_runners(coord=aud_coord, sess=aud_dqn.sess)
 
     opt_dqn.sess.run(tf.local_variables_initializer())
     opt_dqn.sess.graph.finalize()
@@ -163,10 +163,7 @@ if __name__ == '__main__':
     opt_sequences = dict()
     while len(filenames) > 0:
         # read a batch of tfrecords into np arrays
-        # seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = aud_dqn.sess.run(
-        #     [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
-
-        seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
+        seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = aud_dqn.sess.run(
             [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
 
         name = name[0].replace('.txt', '_validation.tfrecord').replace(
@@ -184,20 +181,20 @@ if __name__ == '__main__':
             opt_pred_sequence = ""
 
             for i in range(max(opt_num_chunks, aud_num_chunks)):
-                # if i < aud_num_chunks:
-                #     # Label Data
-                #     aud_label_data = label_data_aud(AUD_FRAME_SIZE, AUD_STRIDE, i, seq_len, timing_dict)
-                #     vals = {
-                #         aud_dqn.seq_length_ph: seq_len,
-                #         aud_dqn.aud_ph: np.expand_dims(aud_raw[0][AUD_STRIDE * i:AUD_STRIDE * i + AUD_FRAME_SIZE], 0),
-                #         aud_dqn.aud_y_ph: aud_label_data
-                #     }
-                #     aud_pred = aud_dqn.sess.run([aud_dqn.aud_observed], feed_dict=vals)
-                #     real_class = int(np.argmax(aud_label_data))
-                #     selected_class = int(aud_pred[0][0])
-                #     aud_matrix[real_class][selected_class] += 1
-                #     aud_real_sequence += SEQUENCE_CHARS[real_class]
-                #     aud_pred_sequence += SEQUENCE_CHARS[selected_class]
+                if i < aud_num_chunks:
+                    # Label Data
+                    aud_label_data = label_data_aud(AUD_FRAME_SIZE, AUD_STRIDE, i, seq_len, timing_dict)
+                    vals = {
+                        aud_dqn.seq_length_ph: seq_len,
+                        aud_dqn.aud_ph: np.expand_dims(aud_raw[0][AUD_STRIDE * i:AUD_STRIDE * i + AUD_FRAME_SIZE], 0),
+                        aud_dqn.aud_y_ph: aud_label_data
+                    }
+                    aud_pred = aud_dqn.sess.run([aud_dqn.aud_observed], feed_dict=vals)
+                    real_class = int(np.argmax(aud_label_data))
+                    selected_class = int(aud_pred[0][0])
+                    aud_matrix[real_class][selected_class] += 1
+                    aud_real_sequence += SEQUENCE_CHARS[real_class]
+                    aud_pred_sequence += SEQUENCE_CHARS[selected_class]
                 if i < opt_num_chunks:
                     # Label Data
                     opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE, i, seq_len, timing_dict)
