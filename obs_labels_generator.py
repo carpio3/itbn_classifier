@@ -146,14 +146,16 @@ if __name__ == '__main__':
 
     # initialize all variables
     with aud_dqn.sess.as_default():
-        aud_dqn.sess.run(tf.local_variables_initializer())
-        aud_dqn.sess.graph.finalize()
-        threads = tf.train.start_queue_runners(coord=aud_coord, sess=aud_dqn.sess)
+        with aud_dqn.graph.as_default():
+            aud_dqn.sess.run(tf.local_variables_initializer())
+            aud_dqn.sess.graph.finalize()
+            threads = tf.train.start_queue_runners(coord=aud_coord, sess=aud_dqn.sess)
 
     with opt_dqn.sess.as_default():
-        opt_dqn.sess.run(tf.local_variables_initializer())
-        opt_dqn.sess.graph.finalize()
-        threads = tf.train.start_queue_runners(coord=opt_coord, sess=opt_dqn.sess)
+        with opt_dqn.graph.as_default():
+            opt_dqn.sess.run(tf.local_variables_initializer())
+            opt_dqn.sess.graph.finalize()
+            threads = tf.train.start_queue_runners(coord=opt_coord, sess=opt_dqn.sess)
 
     print("Num epochs: {}\nBatch Size: {}\nNum Files: {}".format(NUM_EPOCHS, BATCH_SIZE, len(filenames)))
 
