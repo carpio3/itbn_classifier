@@ -32,6 +32,8 @@ interval_relation_map = {
     (0., 0., -1., 1.): 'EQUAL'
 }
 
+validation = False
+
 
 def calculate_relationship(window_s, window_e, event_s, event_e):
     temp_distance = (np.sign(event_s - window_s), np.sign(event_e - window_e),
@@ -117,8 +119,12 @@ if __name__ == '__main__':
     filenames = list()
     for root, dir, files in os.walk(path):
         for f in files:
-            if 'validation' in f:
-                filenames.append(os.path.join(root, f))
+            if validation:
+                if 'validation' in f:
+                    filenames.append(os.path.join(root, f))
+            else:
+                if 'validation' not in f:
+                    filenames.append(os.path.join(root, f))
     filenames.sort()
 
     print("{}".format(filenames))
@@ -170,8 +176,12 @@ if __name__ == '__main__':
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
             [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, name_inp])
 
-        name = name[0].replace('.txt', '_validation.tfrecord').replace(
-            '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../ITBN_tfrecords/')
+        if validation:
+            name = name[0].replace('.txt', '_validation.tfrecord').replace(
+                '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../ITBN_tfrecords/')
+        else:
+            name = name[0].replace('.txt', '.tfrecord').replace(
+                '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/', '../ITBN_tfrecords/')
         if name in filenames:
             counter += 1
             print("processing {}/{}: {}".format(counter, num_files, name))
