@@ -26,7 +26,7 @@ AUD_DQN_CHKPNT = "aud_classifier/itbn_aud_final/model.ckpt"
 OPT_DQN_CHKPNT = "opt_classifier/itbn_opt_final/model.ckpt"
 
 # tf records path
-TF_RECORDS_PATH = "../ITBN_tfrecords/"
+TF_RECORDS_PATH = "../../ITBN_tfrecords/"
 LABELS_PATH = '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/'
 
 # cnn parameters
