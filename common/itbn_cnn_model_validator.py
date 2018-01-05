@@ -22,8 +22,8 @@ validation = False
 ITBN_MODEL_PATH = 'input/itbn.nx'
 
 # cnn models paths
-AUD_DQN_CHKPNT = "aud_classifier/itbn_aud_final/model.ckpt"
-OPT_DQN_CHKPNT = "opt_classifier/itbn_opt_final/model.ckpt"
+AUD_DQN_CHKPNT = "../aud_classifier/itbn_aud_final/model.ckpt"
+OPT_DQN_CHKPNT = "../opt_classifier/itbn_opt_final/model.ckpt"
 
 # tf records path
 TF_RECORDS_PATH = "../../ITBN_tfrecords/"
