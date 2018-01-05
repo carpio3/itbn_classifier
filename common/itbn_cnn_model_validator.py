@@ -195,7 +195,7 @@ if __name__ == '__main__':
 
     num_files = len(file_names)
     counter = 0
-    while len(file_names) > 130:
+    while len(file_names) > 0:
         # read a batch of tfrecords into np arrays
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
          [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, file_name])
@@ -257,12 +257,12 @@ if __name__ == '__main__':
                 if process_opt_window:
                     with opt_dqn.sess.as_default():
                         opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE,
-                                                        aud_chunk_counter, seq_len, timing_dict)
+                                                        opt_chunk_counter, seq_len, timing_dict)
                         vals = {
                             opt_dqn.seq_length_ph: seq_len,
                             opt_dqn.pnt_ph: np.expand_dims(
-                                opt_raw[0][OPT_STRIDE * aud_chunk_counter:
-                                           OPT_STRIDE * aud_chunk_counter + OPT_FRAME_SIZE], 0),
+                                opt_raw[0][OPT_STRIDE * opt_chunk_counter:
+                                           OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE], 0),
                             opt_dqn.pnt_y_ph: opt_label_data
                         }
                         opt_pred = opt_dqn.sess.run([opt_dqn.wave_observed], feed_dict=vals)
@@ -271,7 +271,7 @@ if __name__ == '__main__':
                         opt_matrix[real_class][selected_class] += 1
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
                         opt_pred_sequence += SEQUENCE_CHARS[selected_class]
-                        aud_chunk_counter += 1
+                        opt_chunk_counter += 1
                         process_opt_window = False
             aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
             opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
