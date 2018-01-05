@@ -224,14 +224,14 @@ if __name__ == '__main__':
             process_aud_window = False
             process_opt_window = False
 
-            for frame_counter in range(seq_len):
+            while aud_chunk_counter < aud_num_chunks or opt_chunk_counter < opt_num_chunks:
                 aud_frame_counter += 1
                 opt_frame_counter += 1
 
-                if aud_frame_counter == AUD_FRAME_SIZE:
+                if aud_frame_counter == AUD_FRAME_SIZE and aud_chunk_counter < aud_num_chunks:
                     process_aud_window = True
                     aud_frame_counter = 0
-                if opt_frame_counter == OPT_FRAME_SIZE:
+                if opt_frame_counter == OPT_FRAME_SIZE and opt_chunk_counter < opt_num_chunks:
                     process_opt_window = True
                     opt_frame_counter = 0
 
