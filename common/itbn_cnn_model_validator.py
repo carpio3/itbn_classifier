@@ -215,27 +215,13 @@ if __name__ == '__main__':
             opt_num_chunks = (seq_len - OPT_FRAME_SIZE) / OPT_STRIDE + 1
             aud_chunk_counter = 0
             opt_chunk_counter = 0
-            aud_frame_counter = 0
-            opt_frame_counter = 0
             aud_real_sequence = ""
             aud_pred_sequence = ""
             opt_real_sequence = ""
             opt_pred_sequence = ""
-            process_aud_window = False
-            process_opt_window = False
 
-            while aud_chunk_counter < aud_num_chunks or opt_chunk_counter < opt_num_chunks:
-                aud_frame_counter += 1
-                opt_frame_counter += 1
-
-                if aud_frame_counter == AUD_FRAME_SIZE and aud_chunk_counter < aud_num_chunks:
-                    process_aud_window = True
-                    aud_frame_counter = 0
-                if opt_frame_counter == OPT_FRAME_SIZE and opt_chunk_counter < opt_num_chunks:
-                    process_opt_window = True
-                    opt_frame_counter = 0
-
-                if process_aud_window:
+            for i in range(seq_len):
+                if i == AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE:
                     with aud_dqn.sess.as_default():
                         aud_label_data = label_data_aud(AUD_FRAME_SIZE, AUD_STRIDE,
                                                         aud_chunk_counter, seq_len, timing_dict)
@@ -256,8 +242,7 @@ if __name__ == '__main__':
                                                             AUD_STRIDE * aud_chunk_counter,
                                                             AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
                         aud_chunk_counter += 1
-                        process_aud_window = False
-                if process_opt_window:
+                if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
                     with opt_dqn.sess.as_default():
                         opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE,
                                                         opt_chunk_counter, seq_len, timing_dict)
@@ -278,7 +263,6 @@ if __name__ == '__main__':
                                                             OPT_STRIDE * opt_chunk_counter,
                                                             OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
                         opt_chunk_counter += 1
-                        process_opt_window = False
             aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
             opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
 
