@@ -195,7 +195,7 @@ if __name__ == '__main__':
 
     num_files = len(file_names)
     counter = 0
-    while len(file_names) > 0:
+    while len(file_names) > 135:
         # read a batch of tfrecords into np arrays
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
          [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, file_name])
@@ -252,6 +252,9 @@ if __name__ == '__main__':
                         aud_matrix[real_class][selected_class] += 1
                         aud_real_sequence += SEQUENCE_CHARS[real_class]
                         aud_pred_sequence += SEQUENCE_CHARS[selected_class]
+                        print("aud frame {}: {}, {}".format(aud_chunk_counter,
+                                                            AUD_STRIDE * aud_chunk_counter,
+                                                            AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
                         aud_chunk_counter += 1
                         process_aud_window = False
                 if process_opt_window:
@@ -271,6 +274,9 @@ if __name__ == '__main__':
                         opt_matrix[real_class][selected_class] += 1
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
                         opt_pred_sequence += SEQUENCE_CHARS[selected_class]
+                        print("opt frame {}: {}, {}".format(opt_chunk_counter,
+                                                            OPT_STRIDE * opt_chunk_counter,
+                                                            OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
                         opt_chunk_counter += 1
                         process_opt_window = False
             aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
@@ -279,10 +285,10 @@ if __name__ == '__main__':
     # print results
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
 
-    print("\n\nAUDIO SEQUENCES:")
-    for f in aud_sequences.keys():
-        print("{}\n{}\n".format(f, aud_sequences[f]))
-
-    print("\n\nVIDEO SEQUENCES:")
-    for f in opt_sequences.keys():
-        print("{}\n{}\n".format(f, opt_sequences[f]))
+    # print("\n\nAUDIO SEQUENCES:")
+    # for f in aud_sequences.keys():
+    #     print("{}\n{}\n".format(f, aud_sequences[f]))
+    #
+    # print("\n\nVIDEO SEQUENCES:")
+    # for f in opt_sequences.keys():
+    #     print("{}\n{}\n".format(f, opt_sequences[f]))
