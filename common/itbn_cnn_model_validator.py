@@ -195,7 +195,7 @@ if __name__ == '__main__':
 
     num_files = len(file_names)
     counter = 0
-    while len(file_names) > 135:
+    while len(file_names) > 138:
         # read a batch of tfrecords into np arrays
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
          [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, file_name])
@@ -219,8 +219,11 @@ if __name__ == '__main__':
             aud_pred_sequence = ""
             opt_real_sequence = ""
             opt_pred_sequence = ""
+            window_processed = False
+            session_started = False
 
             for i in range(seq_len):
+                window_processed = False
                 if i == AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE:
                     with aud_dqn.sess.as_default():
                         aud_label_data = label_data_aud(AUD_FRAME_SIZE, AUD_STRIDE,
@@ -238,10 +241,11 @@ if __name__ == '__main__':
                         aud_matrix[real_class][selected_class] += 1
                         aud_real_sequence += SEQUENCE_CHARS[real_class]
                         aud_pred_sequence += SEQUENCE_CHARS[selected_class]
-                        print("aud frame {}: {}, {}".format(aud_chunk_counter,
-                                                            AUD_STRIDE * aud_chunk_counter,
-                                                            AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
+                        # print("aud frame {}: {}, {}".format(aud_chunk_counter,
+                        #                                     AUD_STRIDE * aud_chunk_counter,
+                        #                                     AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
                         aud_chunk_counter += 1
+                        window_processed = True
                 if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
                     with opt_dqn.sess.as_default():
                         opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE,
@@ -259,10 +263,16 @@ if __name__ == '__main__':
                         opt_matrix[real_class][selected_class] += 1
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
                         opt_pred_sequence += SEQUENCE_CHARS[selected_class]
-                        print("opt frame {}: {}, {}".format(opt_chunk_counter,
-                                                            OPT_STRIDE * opt_chunk_counter,
-                                                            OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
+                        # print("opt frame {}: {}, {}".format(opt_chunk_counter,
+                        #                                     OPT_STRIDE * opt_chunk_counter,
+                        #                                     OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
                         opt_chunk_counter += 1
+                        window_processed = True
+                if window_processed:
+                    if session_started:
+                        print(timing_dict)
+                    else:
+                        session_started = True
             aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
             opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
 
