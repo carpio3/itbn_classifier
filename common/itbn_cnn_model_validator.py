@@ -315,6 +315,7 @@ if __name__ == '__main__':
                 if window_processed:
                     if 'command' in pending_events and obs_robot == 1:
                         session_data['command'][0] = 'Y'
+                        pending_events.remove('command')
                     elif 'command' not in pending_events:
                         window_data = session_data.copy()
                         window_data.drop(pending_events, axis=1, inplace=True)
@@ -348,7 +349,6 @@ if __name__ == '__main__':
                                                 times[0], times[1], w_time[0], w_time[1],
                                                 reduced_set=False)
                         print('session at {}: {}'.format(i, session_data))
-
             print('SESSION: {}'.format(session_data))
             print('REAL TIMES: {}'.format(timing_dict))
             print('PREDICTED TIMES: {}'.format(event_times))
