@@ -309,6 +309,7 @@ if __name__ == '__main__':
                     if 'command' in pending_events and obs_robot == 1:
                         session_data['command'][0] = 'Y'
                         pending_events.remove('command')
+                        event_times['command'] = w_time
                     elif 'command' not in pending_events:
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
@@ -333,13 +334,13 @@ if __name__ == '__main__':
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
                             predictions = itbn_model.predict(temp_window)
-                            print('predictions a {}: {}'.format(i, dict(predictions.ix[0])))
+                            print('predictions at {}: {}'.format(i, dict(predictions.ix[0])))
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
-                                pending_events.remove(event)
                                 event_times[event] = w_time
                         for event in new_preds:
                             session_data[event][0] = 'Y'
+                            pending_events.remove(event)
                             for events, rel in window_rels.items():
                                 if event in events:
                                     session_data[itbn_model.temporal_node_marker + events[0] + '_' +
