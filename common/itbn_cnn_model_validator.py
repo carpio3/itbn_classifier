@@ -336,9 +336,9 @@ if __name__ == '__main__':
                                     times = event_times[events[0]]
                                     window_data[col][0] = calculate_relationship(
                                         times[0], times[1], w_time[0], w_time[1], reduced_set=False)
-                        print('window at {}: {}'.format(i, window_data))
+                        print('window at {}: {}'.format(i, dict(window_data.ix[0])))
                         predictions = itbn_model.predict(window_data)
-                        print('predictions at {}: {}'.format(i, predictions))
+                        print('predictions at {}: {}'.format(i, dict(predictions.ix[0])))
                         for pred in predictions:
                             if predictions[pred][0] == 'Y':
                                 session_data[pred][0] = 'Y'
@@ -354,8 +354,8 @@ if __name__ == '__main__':
                                             session_data[col][0] = calculate_relationship(
                                                 times[0], times[1], w_time[0], w_time[1],
                                                 reduced_set=False)
-                        print('session at {}: {}'.format(i, session_data))
-            print('SESSION: {}'.format(session_data))
+                        print('session at {}: {}'.format(i, dict(session_data.ix[0])))
+            print('SESSION: {}'.format(dict(session_data.ix[0])))
             print('REAL TIMES: {}'.format(timing_dict))
             print('PREDICTED TIMES: {}'.format(event_times))
             aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
