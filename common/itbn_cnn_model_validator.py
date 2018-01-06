@@ -326,7 +326,9 @@ if __name__ == '__main__':
                         pending_events.remove('command')
                     elif 'command' not in pending_events:
                         window_data = session_data.copy()
+                        print('\nwindow at {}: {}'.format(i, dict(window_data.ix[0])))
                         window_data.drop(pending_events, axis=1, inplace=True)
+                        print('window at {}: {}'.format(i, dict(window_data.ix[0])))
                         for col in list(window_data.columns):
                             if col in robot_events:
                                 window_data[col][0] = obs_robot
@@ -338,7 +340,9 @@ if __name__ == '__main__':
                                     times = event_times[events[0]]
                                     window_data[col][0] = calculate_relationship(
                                         times[0], times[1], w_time[0], w_time[1], reduced_set=False)
-                        print('window at {}: {}'.format(i, dict(window_data.ix[0])))
+                        print('window at {}, {}, {}: {}\n'.format(i, aud_selected_class,
+                                                                opt_selected_class,
+                                                                dict(window_data.ix[0])))
                         predictions = itbn_model.predict(window_data)
                         print('predictions at {}: {}'.format(i, dict(predictions.ix[0])))
                         for pred in predictions:
