@@ -18,12 +18,12 @@ model.learn_temporal_relationships_from_cpds()
 #     print(cpd)
 # print(sorted(model.nodes()))
 
-obs_robot = 0
+obs_robot = 1
 obs_human = 0
 
 data = pd.DataFrame([('N', 'Y', 'N', 'N', 'N',
                       obs_robot, obs_robot, obs_robot, obs_human, obs_robot,
-                      0, 0, 0, 0, 0)],
+                      2, 0, 0, 0, 0)],
                     columns=['abort', 'command', 'prompt', 'response', 'reward',
                              'obs_abort', 'obs_command', 'obs_prompt', 'obs_response', 'obs_reward',
                              'tm_command_prompt', 'tm_command_response', 'tm_prompt_abort',

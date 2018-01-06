@@ -16,6 +16,9 @@ from pgmpy.models import IntervalTemporalBayesianNetwork
 
 # PARAMETERS ##############################################
 
+# disable unwanted pandas warnings
+pd.options.mode.chained_assignment = None
+
 # boolean used to switch between training/validation
 validation = False
 
