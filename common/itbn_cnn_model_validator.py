@@ -277,10 +277,10 @@ if __name__ == '__main__':
                         }
                         aud_pred = aud_dqn.sess.run([aud_dqn.aud_observed], feed_dict=vals)
                         real_class = int(np.argmax(aud_label_data))
-                        selected_class = int(aud_pred[0][0])
-                        aud_matrix[real_class][selected_class] += 1
+                        aud_selected_class = int(aud_pred[0][0])
+                        aud_matrix[real_class][aud_selected_class] += 1
                         aud_real_sequence += SEQUENCE_CHARS[real_class]
-                        aud_pred_sequence += SEQUENCE_CHARS[selected_class]
+                        aud_pred_sequence += SEQUENCE_CHARS[aud_selected_class]
                         # print("aud frame {}: {}, {}".format(aud_chunk_counter,
                         #                                     AUD_STRIDE * aud_chunk_counter,
                         #                                     AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
@@ -301,10 +301,10 @@ if __name__ == '__main__':
                         }
                         opt_pred = opt_dqn.sess.run([opt_dqn.wave_observed], feed_dict=vals)
                         real_class = int(np.argmax(opt_label_data))
-                        selected_class = int(opt_pred[0][0])
-                        opt_matrix[real_class][selected_class] += 1
+                        opt_selected_class = int(opt_pred[0][0])
+                        opt_matrix[real_class][opt_selected_class] += 1
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
-                        opt_pred_sequence += SEQUENCE_CHARS[selected_class]
+                        opt_pred_sequence += SEQUENCE_CHARS[opt_selected_class]
                         # print("opt frame {}: {}, {}".format(opt_chunk_counter,
                         #                                     OPT_STRIDE * opt_chunk_counter,
                         #                                     OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
@@ -313,6 +313,12 @@ if __name__ == '__main__':
                         w_time = (OPT_STRIDE * opt_chunk_counter,
                                   OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE)
                 if window_processed:
+                    obs_robot = 0
+                    obs_human = 0
+                    if opt_selected_class == 1 or aud_selected_class == 1:
+                        obs_robot = 1
+                    if opt_selected_class == 2 or aud_selected_class == 2:
+                        obs_human = 1
                     if 'command' in pending_events and obs_robot == 1:
                         session_data['command'][0] = 'Y'
                         pending_events.remove('command')
