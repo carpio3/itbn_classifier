@@ -1,6 +1,7 @@
 # IMPORTS ##############################################
 import os
 import networkx as nx
+import pandas as pd
 from datetime import datetime
 
 # cnn models
@@ -40,7 +41,7 @@ OPT_STRIDE = 20
 SEQUENCE_CHARS = ["_", "|", "*"]
 
 # subset of allen's interval relations that are used to classify a window fed to the cnns
-INTERVAL_RELATION_MAP = {
+WINDOW_INTERVAL_RELATION_MAP = {
     (1., -1., -1., 1.): 'DURING',
     (-1., 1., -1., 1.): 'DURING_INV',
     (-1., -1., -1., 1.): 'OVERLAPS',
@@ -51,15 +52,32 @@ INTERVAL_RELATION_MAP = {
     (-1., 0., -1., 1.): 'FINISHES_INV',
     (0., 0., -1., 1.): 'EQUAL'
 }
+EVENT_INTERVAL_RELATION_MAP = {
+    (-1., -1., -1., -1.): 1,
+    (1., 1., 1., 1.): 2,
+    (-1., -1., -1., 0.): 3,
+    (1., 1., 0., 1.): 4,
+    (-1., -1., -1., 1.): 5,
+    (1., 1., -1., 1.): 6,
+    (1., -1., -1., 1.) : 7,
+    (-1., 1., -1., 1.) : 8,
+    (0., -1., -1., 1.) : 9,
+    (0., 1., -1., 1.) : 10,
+    (1., 0., -1., 1.) : 11,
+    (-1., 0., -1., 1.) : 12,
+    (0., 0., -1., 1.) : 13
+}
 
 
 # FUNCTIONS DEFINITION ##############################################
-
 # given a window and event start and end time calculates the interval relation between them
-def calculate_relationship(window_s, window_e, event_s, event_e):
-    temp_distance = (np.sign(event_s - window_s), np.sign(event_e - window_e),
-                     np.sign(event_s - window_e), np.sign(event_e - window_s))
-    return INTERVAL_RELATION_MAP.get(temp_distance, '')
+def calculate_relationship(a_s, a_e, b_s, b_e, reduced_set=True):
+    temp_distance = (np.sign(b_s - a_s), np.sign(b_e - a_e),
+                     np.sign(b_s - a_e), np.sign(b_e - a_s))
+    if reduced_set:
+        return WINDOW_INTERVAL_RELATION_MAP.get(temp_distance, '')
+    else:
+        return  EVENT_INTERVAL_RELATION_MAP.get(temp_distance, 0)
 
 
 # verifies if there is a valid interval relation between the event and the given window
@@ -151,9 +169,9 @@ if __name__ == '__main__':
 
     # loading itbn model
     nx_model = nx.read_gpickle(ITBN_MODEL_PATH)
-    model = IntervalTemporalBayesianNetwork(nx_model.edges())
-    model.add_cpds(*nx_model.cpds)
-    model.learn_temporal_relationships_from_cpds()
+    itbn_model = IntervalTemporalBayesianNetwork(nx_model.edges())
+    itbn_model.add_cpds(*nx_model.cpds)
+    itbn_model.learn_temporal_relationships_from_cpds()
 
     # load cnn models
     aud_dqn = aud_classifier.ClassifierModel(batch_size=BATCH_SIZE, learning_rate=ALPHA,
@@ -207,12 +225,17 @@ if __name__ == '__main__':
             name = name[0].replace('.txt', '.tfrecord').replace(LABELS_PATH, TF_RECORDS_PATH)
 
         if name in file_names:
+            # print debugging feedback
+            file_names.remove(name)
             counter += 1
             print("processing {}/{}: {}".format(counter, num_files, name))
-            file_names.remove(name)
+
+            # get timing information and calculate number of chunks
             timing_dict = parse_timing_dict(timing_labels[0], timing_values[0])
             aud_num_chunks = (seq_len - AUD_FRAME_SIZE) / AUD_STRIDE + 1
             opt_num_chunks = (seq_len - OPT_FRAME_SIZE) / OPT_STRIDE + 1
+
+            # initialize control and debugging variables
             aud_chunk_counter = 0
             opt_chunk_counter = 0
             aud_real_sequence = ""
@@ -220,7 +243,24 @@ if __name__ == '__main__':
             opt_real_sequence = ""
             opt_pred_sequence = ""
             window_processed = False
-            session_started = False
+
+            # initialize itbn status
+            obs_robot = 0
+            obs_human = 0
+            session_data = pd.DataFrame([('N', 'N', 'N', 'N', 'N',
+                                          obs_robot, obs_robot, obs_robot, obs_human, obs_robot,
+                                          0, 0, 0, 0, 0)],
+                                        columns=['abort', 'command', 'prompt', 'response', 'reward',
+                                                 'obs_abort', 'obs_command', 'obs_prompt',
+                                                 'obs_response', 'obs_reward', 'tm_command_prompt',
+                                                 'tm_command_response', 'tm_prompt_abort',
+                                                 'tm_prompt_response', 'tm_response_reward'])
+            window_data = session_data.copy()
+            pending_events = ['abort', 'command', 'prompt', 'response', 'reward']
+            robot_events = ['abort', 'command', 'prompt', 'reward']
+            human_events = ['response']
+            event_times = dict()
+            w_time = (0, 0)
 
             for i in range(seq_len):
                 window_processed = False
@@ -246,6 +286,8 @@ if __name__ == '__main__':
                         #                                     AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
                         aud_chunk_counter += 1
                         window_processed = True
+                        w_time = (AUD_STRIDE * aud_chunk_counter,
+                                  AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE)
                 if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
                     with opt_dqn.sess.as_default():
                         opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE,
@@ -268,11 +310,48 @@ if __name__ == '__main__':
                         #                                     OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
                         opt_chunk_counter += 1
                         window_processed = True
+                        w_time = (OPT_STRIDE * opt_chunk_counter,
+                                  OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE)
                 if window_processed:
-                    if session_started:
-                        print(timing_dict)
-                    else:
-                        session_started = True
+                    if 'command' in pending_events and obs_robot == 1:
+                        session_data['command'][0] = 'Y'
+                    elif 'command' not in pending_events:
+                        window_data = session_data.copy()
+                        window_data.drop(pending_events, axis=1, inplace=True)
+                        for col in list(window_data.columns):
+                            if col in robot_events:
+                                window_data[col][0] = obs_robot
+                            elif col in human_events:
+                                window_data[col][0] = obs_human
+                            elif col.startswith(itbn_model.temporal_node_marker):
+                                events = col.replace(itbn_model.temporal_node_marker, '').split('_')
+                                if event_times.get(events[0], None) is not None:
+                                    times = event_times[events[0]]
+                                    window_data[col][0] = calculate_relationship(
+                                        times[0], times[1], w_time[0], w_time[1], reduced_set=False)
+                        print('window at {}: {}'.format(i, window_data))
+                        predictions = itbn_model.predict(window_data)
+                        print('predictions at {}: {}'.format(i, predictions))
+                        for pred in predictions:
+                            if predictions[pred][0] == 'Y':
+                                session_data[pred][0] = 'Y'
+                                event_times[pred] = w_time
+                                pending_events.remove(pred)
+                                for col in list(session_data.columns):
+                                    if col.startswith(itbn_model.temporal_node_marker):
+                                        events = col.replace(
+                                            itbn_model.temporal_node_marker, '').split('_')
+                                        if (event_times.get(events[0], None) is not None and
+                                                pred == events[1]):
+                                            times = event_times[events[0]]
+                                            session_data[col][0] = calculate_relationship(
+                                                times[0], times[1], w_time[0], w_time[1],
+                                                reduced_set=False)
+                        print('session at {}: {}'.format(i, session_data))
+
+            print('SESSION: {}'.format(session_data))
+            print('REAL TIMES: {}'.format(timing_dict))
+            print('PREDICTED TIMES: {}'.format(event_times))
             aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
             opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
 
