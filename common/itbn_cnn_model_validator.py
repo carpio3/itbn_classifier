@@ -257,7 +257,7 @@ if __name__ == '__main__':
                                                  'obs_response', 'obs_reward', 'tm_command_prompt',
                                                  'tm_command_response', 'tm_prompt_abort',
                                                  'tm_prompt_response', 'tm_response_reward'])
-            window_data = session_data.copy()
+            window_data = session_data.copy(deep=True)
             pending_events = ['abort', 'command', 'prompt', 'response', 'reward']
             robot_events = ['abort', 'command', 'prompt', 'reward']
             human_events = ['response']
