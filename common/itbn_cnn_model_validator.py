@@ -325,7 +325,7 @@ if __name__ == '__main__':
                         session_data['command'][0] = 'Y'
                         pending_events.remove('command')
                     elif 'command' not in pending_events:
-                        window_data = session_data.copy()
+                        window_data = session_data.copy(deep=True)
                         print('\nwindow at {}: {}'.format(i, dict(window_data.ix[0])))
                         window_data.drop(pending_events, axis=1, inplace=True)
                         print('window at {}: {}'.format(i, dict(window_data.ix[0])))
