@@ -39,6 +39,7 @@ AUD_FRAME_SIZE = 20
 AUD_STRIDE = 7
 OPT_FRAME_SIZE = 45
 OPT_STRIDE = 20
+FAR_FRAME = 10000
 
 # debug characters for cnn classifications [silence, robot, human]
 SEQUENCE_CHARS = ["_", "|", "*"]
@@ -210,10 +211,6 @@ if __name__ == '__main__':
     aud_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     opt_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
-    # debugging sequences
-    aud_sequences = dict()
-    opt_sequences = dict()
-
     num_files = len(file_names)
     counter = 0
     while len(file_names) > 138:
@@ -241,10 +238,6 @@ if __name__ == '__main__':
             # initialize control and debugging variables
             aud_chunk_counter = 0
             opt_chunk_counter = 0
-            aud_real_sequence = ""
-            aud_pred_sequence = ""
-            opt_real_sequence = ""
-            opt_pred_sequence = ""
             window_processed = False
             aud_selected_class = 0
             opt_selected_class = 0
@@ -271,55 +264,44 @@ if __name__ == '__main__':
                 window_processed = False
                 if i == AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE:
                     with aud_dqn.sess.as_default():
+                        start_frame = AUD_STRIDE * aud_chunk_counter
+                        end_frame = AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE
                         aud_label_data = label_data_aud(AUD_FRAME_SIZE, AUD_STRIDE,
                                                         aud_chunk_counter, seq_len, timing_dict)
                         vals = {
                             aud_dqn.seq_length_ph: seq_len,
-                            aud_dqn.aud_ph: np.expand_dims(
-                                aud_raw[0][AUD_STRIDE * aud_chunk_counter:
-                                           AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE], 0),
+                            aud_dqn.aud_ph: np.expand_dims(aud_raw[0][start_frame: end_frame], 0),
                             aud_dqn.aud_y_ph: aud_label_data
                         }
                         aud_pred = aud_dqn.sess.run([aud_dqn.aud_observed], feed_dict=vals)
                         real_class = int(np.argmax(aud_label_data))
                         aud_selected_class = int(aud_pred[0][0])
                         aud_matrix[real_class][aud_selected_class] += 1
-                        aud_real_sequence += SEQUENCE_CHARS[real_class]
-                        aud_pred_sequence += SEQUENCE_CHARS[aud_selected_class]
-                        # print("aud frame {}: {}, {}".format(aud_chunk_counter,
-                        #                                     AUD_STRIDE * aud_chunk_counter,
-                        #                                     AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE))
                         aud_chunk_counter += 1
                         window_processed = True
-                        w_time = (AUD_STRIDE * aud_chunk_counter,
-                                  AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE)
+                        w_time = (start_frame, end_frame)
                 if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
                     with opt_dqn.sess.as_default():
+                        start_frame = OPT_STRIDE * opt_chunk_counter
+                        end_frame = OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE
                         opt_label_data = label_data_opt(OPT_FRAME_SIZE, OPT_STRIDE,
                                                         opt_chunk_counter, seq_len, timing_dict)
                         vals = {
                             opt_dqn.seq_length_ph: seq_len,
-                            opt_dqn.pnt_ph: np.expand_dims(
-                                opt_raw[0][OPT_STRIDE * opt_chunk_counter:
-                                           OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE], 0),
+                            opt_dqn.pnt_ph: np.expand_dims(opt_raw[0][start_frame: end_frame], 0),
                             opt_dqn.pnt_y_ph: opt_label_data
                         }
                         opt_pred = opt_dqn.sess.run([opt_dqn.wave_observed], feed_dict=vals)
                         real_class = int(np.argmax(opt_label_data))
                         opt_selected_class = int(opt_pred[0][0])
                         opt_matrix[real_class][opt_selected_class] += 1
-                        opt_real_sequence += SEQUENCE_CHARS[real_class]
-                        opt_pred_sequence += SEQUENCE_CHARS[opt_selected_class]
-                        # print("opt frame {}: {}, {}".format(opt_chunk_counter,
-                        #                                     OPT_STRIDE * opt_chunk_counter,
-                        #                                     OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE))
                         opt_chunk_counter += 1
                         window_processed = True
-                        w_time = (OPT_STRIDE * opt_chunk_counter,
-                                  OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE)
+                        w_time = (start_frame, end_frame)
                 if window_processed:
                     obs_robot = 0
                     obs_human = 0
+                    window_rels = dict()
                     if opt_selected_class == 1 or aud_selected_class == 1:
                         obs_robot = 1
                     if opt_selected_class == 2 or aud_selected_class == 2:
@@ -329,54 +311,43 @@ if __name__ == '__main__':
                         pending_events.remove('command')
                     elif 'command' not in pending_events:
                         window_data = session_data.copy(deep=True)
-                        print('\nwindow at {}: {}'.format(i, dict(window_data.ix[0])))
-                        window_data.drop(pending_events, axis=1, inplace=True)
-                        print('window at {}: {}'.format(i, dict(window_data.ix[0])))
                         for col in list(window_data.columns):
                             if col in robot_events:
                                 window_data[col][0] = obs_robot
                             elif col in human_events:
                                 window_data[col][0] = obs_human
                             elif col.startswith(itbn_model.temporal_node_marker):
-                                events = col.replace(itbn_model.temporal_node_marker, '').split('_')
-                                if event_times.get(events[0], None) is not None:
-                                    times = event_times[events[0]]
-                                    window_data[col][0] = calculate_relationship(
-                                        times[0], times[1], w_time[0], w_time[1], reduced_set=False)
-                        print('window at {}, {}, {}: {}\n'.format(i, aud_selected_class,
-                                                                opt_selected_class,
-                                                                dict(window_data.ix[0])))
-                        predictions = itbn_model.predict(window_data)
-                        print('predictions at {}: {}'.format(i, dict(predictions.ix[0])))
-                        for pred in predictions:
-                            if predictions[pred][0] == 'Y':
-                                session_data[pred][0] = 'Y'
-                                event_times[pred] = w_time
-                                pending_events.remove(pred)
-                                for col in list(session_data.columns):
-                                    if col.startswith(itbn_model.temporal_node_marker):
-                                        events = col.replace(
-                                            itbn_model.temporal_node_marker, '').split('_')
-                                        if (event_times.get(events[0], None) is not None and
-                                                pred == events[1]):
-                                            times = event_times[events[0]]
-                                            session_data[col][0] = calculate_relationship(
-                                                times[0], times[1], w_time[0], w_time[1],
-                                                reduced_set=False)
+                                events = col.split('_')
+                                a_times = event_times.get(events[1], (FAR_FRAME, FAR_FRAME + 1))
+                                rel = calculate_relationship(a_times[0], a_times[1], w_time[0],
+                                                             w_time[1], reduced_set=False)
+                                if rel not in itbn_model.relation_map[(events[1], events[2])]:
+                                    rel = 0
+                                window_rels[(events[1], events[2])] = rel
+                        new_preds = list()
+                        for event in pending_events:
+                            temp_window = window_data.copy(deep=True)
+                            for events, rel in window_rels.items():
+                                if events in events:
+                                    temp_window[itbn_model.temporal_node_marker + events[0] + '_' +
+                                                events[1]] = rel
+                            temp_window.drop(event, axis=1, inplace=True)
+                            predictions = itbn_model.predict(temp_window)
+                            print('predictions a {}: {}'.format(i, dict(predictions.ix[0])))
+                            if predictions[event][0] == 'Y':
+                                new_preds.append(event)
+                                pending_events.remove(event)
+                                event_times[event] = w_time
+                        for event in new_preds:
+                            session_data[event][0] = 'Y'
+                            for events, rel in window_rels.items():
+                                if event in events:
+                                    session_data[itbn_model.temporal_node_marker + events[0] + '_' +
+                                                 events[1]][0] = rel
                         print('session at {}: {}'.format(i, dict(session_data.ix[0])))
             print('SESSION: {}'.format(dict(session_data.ix[0])))
             print('REAL TIMES: {}'.format(timing_dict))
             print('PREDICTED TIMES: {}'.format(event_times))
-            aud_sequences[name] = aud_real_sequence + "\n" + aud_pred_sequence
-            opt_sequences[name] = opt_real_sequence + "\n" + opt_pred_sequence
 
     # print results
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
-
-    # print("\n\nAUDIO SEQUENCES:")
-    # for f in aud_sequences.keys():
-    #     print("{}\n{}\n".format(f, aud_sequences[f]))
-    #
-    # print("\n\nVIDEO SEQUENCES:")
-    # for f in opt_sequences.keys():
-    #     print("{}\n{}\n".format(f, opt_sequences[f]))
