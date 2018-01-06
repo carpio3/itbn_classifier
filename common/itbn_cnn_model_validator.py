@@ -331,6 +331,7 @@ if __name__ == '__main__':
                         print('window at {}: {}'.format(i, dict(window_data.ix[0])))
                         for col in list(window_data.columns):
                             if col in robot_events:
+                                print(col, obs_robot)
                                 window_data[col][0] = obs_robot
                             elif col in human_events:
                                 window_data[col][0] = obs_human
