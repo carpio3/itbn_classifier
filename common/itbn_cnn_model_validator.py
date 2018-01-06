@@ -243,6 +243,8 @@ if __name__ == '__main__':
             opt_real_sequence = ""
             opt_pred_sequence = ""
             window_processed = False
+            aud_selected_class = 0
+            opt_selected_class = 0
 
             # initialize itbn status
             obs_robot = 0
