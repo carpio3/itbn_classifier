@@ -331,10 +331,9 @@ if __name__ == '__main__':
                         print('window at {}: {}'.format(i, dict(window_data.ix[0])))
                         for col in list(window_data.columns):
                             if col in robot_events:
-                                print(col, obs_robot)
-                                window_data[col][0] = obs_robot
+                                window_data['obs_' + col][0] = obs_robot
                             elif col in human_events:
-                                window_data[col][0] = obs_human
+                                window_data['obs_' + col][0] = obs_human
                             elif col.startswith(itbn_model.temporal_node_marker):
                                 events = col.replace(itbn_model.temporal_node_marker, '').split('_')
                                 if event_times.get(events[0], None) is not None:
