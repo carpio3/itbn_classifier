@@ -259,6 +259,8 @@ if __name__ == '__main__':
             human_events = ['obs_response']
             event_times = dict()
             w_time = (0, 0)
+            last_obs_robot = -1
+            last_obs_human = -1
 
             for i in range(seq_len):
                 window_processed = False
@@ -310,7 +312,10 @@ if __name__ == '__main__':
                         session_data['command'][0] = 'Y'
                         pending_events.remove('command')
                         event_times['command'] = w_time
-                    elif 'command' not in pending_events:
+                    elif 'command' not in pending_events and (obs_robot != last_obs_robot or
+                                                              obs_human != last_obs_human):
+                        last_obs_human = obs_human
+                        last_obs_robot = obs_robot
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
