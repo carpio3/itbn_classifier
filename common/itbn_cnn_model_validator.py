@@ -312,6 +312,8 @@ if __name__ == '__main__':
                         session_data['command'][0] = 'Y'
                         pending_events.remove('command')
                         event_times['command'] = w_time
+                        last_obs_human = obs_human
+                        last_obs_robot = obs_robot
                     elif 'command' not in pending_events and (obs_robot != last_obs_robot or
                                                               obs_human != last_obs_human):
                         last_obs_human = obs_human
