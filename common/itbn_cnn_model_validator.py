@@ -362,11 +362,11 @@ if __name__ == '__main__':
                         # print('session at {}: {}'.format(i, dict(session_data.ix[0])))
             # print('SESSION: {}'.format(dict(session_data.ix[0])))
             print('REAL TIMES:')
-            for event, time in timing_dict.items():
-                print('{}: {}'.format(event, time))
+            for event in sorted(timing_dict):
+                print('{}: {}'.format(event, timing_dict[event]))
             print('PREDICTED TIMES:')
-            for event, time in event_times.items():
-                print('{}: {}'.format(event, time))
+            for event in sorted(event_times):
+                print('{}: {}'.format(event, event_times[event]))
 
     # print results
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
