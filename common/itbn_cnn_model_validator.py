@@ -257,6 +257,9 @@ if __name__ == '__main__':
             pending_events = ['abort', 'command', 'prompt', 'response', 'reward']
             robot_events = ['obs_abort', 'obs_command', 'obs_prompt', 'obs_reward']
             human_events = ['obs_response']
+            start_event = 'command'
+            terminal_events = ['abort', 'reward']
+            terminate = False
             event_times = dict()
             w_time = (0, 0)
             last_obs_robot = -1
@@ -308,13 +311,13 @@ if __name__ == '__main__':
                         obs_robot = 1
                     if opt_selected_class == 2 or aud_selected_class == 2:
                         obs_human = 1
-                    if 'command' in pending_events and obs_robot == 1:
-                        session_data['command'][0] = 'Y'
-                        pending_events.remove('command')
-                        event_times['command'] = w_time
+                    if start_event in pending_events and obs_robot == 1:
+                        session_data[start_event][0] = 'Y'
+                        pending_events.remove(start_event)
+                        event_times[start_event] = w_time
                         last_obs_human = obs_human
                         last_obs_robot = obs_robot
-                    elif 'command' not in pending_events and (obs_robot != last_obs_robot or
+                    elif start_event not in pending_events and (obs_robot != last_obs_robot or
                                                               obs_human != last_obs_human):
                         last_obs_human = obs_human
                         last_obs_robot = obs_robot
@@ -352,6 +355,10 @@ if __name__ == '__main__':
                                 if event in events:
                                     session_data[itbn_model.temporal_node_marker + events[0] + '_' +
                                                  events[1]][0] = rel
+                            if event in terminal_events:
+                                terminate = True
+                        if terminate:
+                            break
                         print('session at {}: {}'.format(i, dict(session_data.ix[0])))
             print('SESSION: {}'.format(dict(session_data.ix[0])))
             print('REAL TIMES: {}'.format(timing_dict))
