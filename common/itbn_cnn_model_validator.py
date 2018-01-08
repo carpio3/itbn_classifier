@@ -272,7 +272,7 @@ if __name__ == '__main__':
     opt_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
     # results
-    results = {True: 0, False: 0}
+    results = {'prompt': [0, 0], 'response': [0, 0], 'abort': [0, 0], 'reward': [0, 0]}
 
     num_files = len(file_names)
     counter = 0
@@ -446,18 +446,26 @@ if __name__ == '__main__':
                             curr_time = event_times[last_event]
                             new_time = (curr_time[0], w_time[1])
                             event_times[last_event] = new_time
-            # print debugging timing information
-            print(aud_real_sequence + "\n" + aud_pred_sequence)
-            print(opt_real_sequence + "\n" + opt_pred_sequence)
             # print('REAL TIMES:')
             final_td = process_real_times(timing_dict)
             # print('PREDICTED TIMES:')
+            error_detected = False
             for event in sorted(event_times):
                 real_time = final_td.get(event, (-1, -1))
                 correct = (event_times[event][0] <= real_time[0] <=
                            event_times[event][0] + AUD_FRAME_SIZE)
-                results[correct] = results[correct] + 1
-                print('{}: {}'.format(event, correct))
+                if correct:
+                    results[event][1] = results[event][1] + 1
+                else:
+                    error_detected = True
+                    results[event][0] = results[event][0] + 1
+                    print('{}: {} - {}, {}, {}'.format(
+                        event, correct, event_times[event][0], real_time[0],
+                        event_times[event][0] + AUD_FRAME_SIZE))
+            if error_detected:
+                # print debugging timing information
+                print(aud_real_sequence + "\n" + aud_pred_sequence)
+                print(opt_real_sequence + "\n" + opt_pred_sequence)
     # print confusion matrices
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
     print('RESULTS: {}'.format(results))
