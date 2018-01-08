@@ -377,7 +377,7 @@ if __name__ == '__main__':
                         for event in pending_events:
                             temp_window = window_data.copy(deep=True)
                             for events, rel in window_rels.items():
-                                if event in events:
+                                if event in events and temp_window['obs_' + event][0] == 1:
                                     temp_window[itbn_model.temporal_node_marker + events[0] + '_' +
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
