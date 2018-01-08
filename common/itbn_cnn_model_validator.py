@@ -265,6 +265,10 @@ if __name__ == '__main__':
             window_processed = False
             aud_selected_class = 0
             opt_selected_class = 0
+            aud_real_sequence = ""
+            aud_pred_sequence = ""
+            opt_real_sequence = ""
+            opt_pred_sequence = ""
 
             # initialize itbn status
             obs_robot = 0
@@ -307,6 +311,8 @@ if __name__ == '__main__':
                         real_class = int(np.argmax(aud_label_data))
                         aud_selected_class = int(aud_pred[0][0])
                         aud_matrix[real_class][aud_selected_class] += 1
+                        aud_real_sequence += SEQUENCE_CHARS[real_class]
+                        aud_pred_sequence += SEQUENCE_CHARS[aud_selected_class]
                         aud_chunk_counter += 1
                         window_processed = True
                         w_time = (start_frame, end_frame)
@@ -325,6 +331,8 @@ if __name__ == '__main__':
                         real_class = int(np.argmax(opt_label_data))
                         opt_selected_class = int(opt_pred[0][0])
                         opt_matrix[real_class][opt_selected_class] += 1
+                        opt_real_sequence += SEQUENCE_CHARS[real_class]
+                        opt_pred_sequence += SEQUENCE_CHARS[opt_selected_class]
                         opt_chunk_counter += 1
                         window_processed = True
                         w_time = (start_frame, end_frame)
@@ -368,7 +376,8 @@ if __name__ == '__main__':
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
                             predictions = itbn_model.predict(temp_window)
-                            print('prediction with {} at {}: {}'.format(i, temp_window, dict(predictions.ix[0])))
+                            print('prediction with {}, {} at {}: {}'.format(
+                                i, obs_robot, obs_human, dict(predictions.ix[0])))
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
@@ -391,6 +400,8 @@ if __name__ == '__main__':
                         new_time = (curr_time[0], w_time[1])
                         event_times[last_event] = new_time
             # print debugging timing information
+            print(aud_real_sequence + "\n" + aud_pred_sequence)
+            print(opt_real_sequence + "\n" + opt_pred_sequence)
             print('REAL TIMES:')
             print_real_times(timing_dict)
             print('PREDICTED TIMES:')
