@@ -156,20 +156,18 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
 
 def print_real_times(td):
     final_td = dict()
-    ignore = ['command', 'prompt']
-    for event in sorted(td):
-        event_info = event.split('_')
-        if event_info[0] not in ignore:
-            event.replace('noise_0', 'command').replace('noise_1', 'prompt')
-            event_info = event.split('_')
-            times = final_td.get(event_info[0], (-1, -1))
-            if event_info[1] == 's':
-                times = (td[event], times[1])
-            else:
-                times = (times[0], td[event])
-            final_td[event_info[0]] = times
-    if 'reward' in final_td:
-        final_td.pop('abort')
+    mapping = {'noise_0': 'command', 'noise_1': 'prompt'}
+    if td.get('reward_s', None) is not None:
+        mapping['abort'] = 'reward'
+    for event, time in td.items():
+        event_name = event.replace('_s', '').replace('_e', '')
+        event = mapping.get(event, event)
+        curr_time = final_td.get(event_name, (100, -1))
+        if '_s' in event:
+            new_time = (min(time, curr_time[0]), curr_time[1])
+        else:
+            new_time = (curr_time[0], max(time, curr_time[1]))
+        final_td[event_name] = new_time
     for event in sorted(final_td):
         print('{}: {}'.format(event, final_td[event]))
     print('DEBUG: {}'.format(td))
