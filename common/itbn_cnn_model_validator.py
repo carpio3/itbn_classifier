@@ -262,8 +262,7 @@ if __name__ == '__main__':
             # initialize control and debugging variables
             aud_chunk_counter = 0
             opt_chunk_counter = 0
-            aud_window_processed = False
-            opt_window_processed = False
+            window_processed = False
             aud_selected_class = 0
             opt_selected_class = 0
             aud_real_sequence = ""
@@ -295,8 +294,7 @@ if __name__ == '__main__':
             last_event = ''
 
             for i in range(seq_len):
-                aud_window_processed = False
-                opt_window_processed = False
+                window_processed = False
                 if i == AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE:
                     with aud_dqn.sess.as_default():
                         start_frame = AUD_STRIDE * aud_chunk_counter
@@ -315,9 +313,9 @@ if __name__ == '__main__':
                         aud_real_sequence += SEQUENCE_CHARS[real_class]
                         aud_pred_sequence += SEQUENCE_CHARS[aud_selected_class]
                         aud_chunk_counter += 1
-                        aud_window_processed = True
+                        window_processed = True
                         w_time = (start_frame, end_frame)
-                if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE and aud_selected_class == 0:
+                if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
                     with opt_dqn.sess.as_default():
                         start_frame = OPT_STRIDE * opt_chunk_counter
                         end_frame = OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE
@@ -335,10 +333,9 @@ if __name__ == '__main__':
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
                         opt_pred_sequence += SEQUENCE_CHARS[opt_selected_class]
                         opt_chunk_counter += 1
-                        opt_window_processed = True
                         w_time = (start_frame, end_frame)
-                if not terminate and (aud_window_processed or opt_window_processed):
-                    if opt_window_processed and opt_selected_class == 2:
+                if not terminate and window_processed:
+                    if opt_selected_class == 2 and aud_selected_class == 0:
                         important_obs = opt_selected_class
                     else:
                         important_obs = aud_selected_class
