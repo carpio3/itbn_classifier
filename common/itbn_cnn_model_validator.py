@@ -160,9 +160,9 @@ def print_real_times(td):
     if td.get('reward_s', None) is not None:
         mapping['abort'] = 'reward'
     for event, time in td.items():
-        event_name = event.replace('_s', '').replace('_e', '')
         event = mapping.get(event, event)
-        curr_time = final_td.get(event_name, (100, -1))
+        event_name = event.replace('_s', '').replace('_e', '')
+        curr_time = final_td.get(event_name, (100000, -1))
         if '_s' in event:
             new_time = (min(time, curr_time[0]), curr_time[1])
         else:
