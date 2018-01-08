@@ -272,7 +272,8 @@ if __name__ == '__main__':
     opt_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
     # results
-    results = {'prompt': [0, 0], 'response': [0, 0], 'abort': [0, 0], 'reward': [0, 0]}
+    results = {'prompt': [0, 0], 'response': [0, 0], 'abort': [0, 0],
+               'reward': [0, 0], 'command': [0, 0]}
 
     num_files = len(file_names)
     counter = 0
