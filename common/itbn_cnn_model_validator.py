@@ -368,6 +368,7 @@ if __name__ == '__main__':
                                     rel = 0
                                 window_rels[(events[1], events[2])] = rel
                         new_preds = list()
+                        print('FRAME: {}'.format(i))
                         for event in pending_events:
                             temp_window = window_data.copy(deep=True)
                             for events, rel in window_rels.items():
@@ -376,8 +377,8 @@ if __name__ == '__main__':
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
                             predictions = itbn_model.predict(temp_window)
-                            print('prediction with {}, {} at {}: {}'.format(
-                                i, obs_robot, obs_human, dict(predictions.ix[0])))
+                            print('prediction with {}, {}: {}'.format(
+                                obs_robot, obs_human, dict(predictions.ix[0])))
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
