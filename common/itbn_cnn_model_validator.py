@@ -59,10 +59,10 @@ WINDOW_INTERVAL_RELATION_MAP = {
 EVENT_INTERVAL_RELATION_MAP = {
     (-1., -1., -1., -1.): 1,
     (1., 1., 1., 1.): 2,
-    (-1., -1., -1., 0.): 3,
-    (1., 1., 0., 1.): 4,
-    (-1., -1., -1., 1.): 5,
-    (1., 1., -1., 1.): 6,
+    (-1., -1., -1., 0.): 1,
+    (1., 1., 0., 1.): 2,
+    (-1., -1., -1., 1.): 1,
+    (1., 1., -1., 1.): 2,
     (1., -1., -1., 1.) : 7,
     (-1., 1., -1., 1.) : 8,
     (0., -1., -1., 1.) : 9,
@@ -158,7 +158,11 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
 def print_real_times(td):
     final_td = dict()
     mapping = {'noise_0_s': 'command_s', 'noise_0_e': 'command_e',
-               'noise_1_s': 'prompt_s', 'noise_1_e': 'prompt_e'}
+               'noise_1_s': 'prompt_s', 'noise_1_e': 'prompt_e',
+               'audio_0_s': 'response_s', 'audio_0_e': 'response_e',
+               'audio_1_s': 'response_s', 'audio_1_e': 'response_e',
+               'gesture_0_s': 'response_s', 'gesture_0_e': 'response_e',
+               'gesture_1_s': 'response_s', 'gesture_1_e': 'response_e'}
     if td.get('reward_s', None) is not None:
         mapping['abort_s'] = 'reward_s'
         mapping['abort_e'] = 'reward_e'
