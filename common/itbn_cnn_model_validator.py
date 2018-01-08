@@ -164,11 +164,9 @@ def print_real_times(td):
         if not event_info[0] in ignore:
             times = final_td.get(event_info[0], (-1, -1))
             if event_info[1] == 's':
-                old_time = td[event]
-                td[event] = (td[event], old_time[1])
+                times = (td[event], times[1])
             else:
-                old_time = td[event]
-                td[event] = (old_time[0], td[event])
+                times = (times[0], td[event])
             final_td[event_info[0]] = times
     if 'reward' in final_td:
         final_td.pop('abort')
