@@ -401,13 +401,13 @@ if __name__ == '__main__':
                             #     obs_robot, obs_human, dict(predictions.ix[0])))
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
-                                event_times[event] = w_time
-                                last_event = event
                         if len(new_preds) == 0:
                             last_obs = 0
                         for event_code in sorted(events_priority):
                             event = events_priority[event_code]
                             if event in new_preds:
+                                event_times[event] = w_time
+                                last_event = event
                                 session_data[event][0] = 'Y'
                                 pending_events.remove(event)
                                 for events, rel in window_rels.items():
