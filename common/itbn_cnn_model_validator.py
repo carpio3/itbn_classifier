@@ -157,11 +157,10 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
 def print_real_times(td):
     final_td = dict()
     ignore = ['command', 'prompt']
-    mapping = {'noise_0': 'command',
-               'noise_1': 'prompt'}
     for event in sorted(td):
         event_info = event.split('_')
         if not event_info[0] in ignore:
+            event.replace('noise_0', 'command').replace('noise_1', 'prompt')
             times = final_td.get(event_info[0], (-1, -1))
             if event_info[1] == 's':
                 times = (td[event], times[1])
@@ -172,6 +171,7 @@ def print_real_times(td):
         final_td.pop('abort')
     for event in sorted(final_td):
         print('{}: {}'.format(event, final_td[event]))
+    print('DEBUG: {}'.format(td))
 
 
 if __name__ == '__main__':
