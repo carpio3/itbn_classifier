@@ -351,8 +351,8 @@ if __name__ == '__main__':
                         last_aud_obs = aud_selected_class
                         last_opt_obs = opt_selected_class
                         last_event = start_event
-                    elif start_event not in pending_events and (obs_robot != last_opt_obs or
-                                                                obs_human != last_aud_obs):
+                    elif ((opt_selected_class != last_opt_obs or aud_selected_class != last_aud_obs)
+                            and start_event not in pending_events):
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
