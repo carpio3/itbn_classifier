@@ -337,7 +337,7 @@ if __name__ == '__main__':
                         opt_chunk_counter += 1
                         opt_window_processed = True
                         w_time = (start_frame, end_frame)
-                if aud_window_processed or opt_window_processed:
+                if not terminate and (aud_window_processed or opt_window_processed):
                     if opt_window_processed:
                         important_obs = opt_selected_class
                     else:
@@ -397,7 +397,8 @@ if __name__ == '__main__':
                             if event in terminal_events:
                                 terminate = True
                         if terminate:
-                            break
+                            aud_pred_sequence += '  '
+                            opt_pred_sequence += '  '
                     else:
                         curr_time = event_times[last_event]
                         new_time = (curr_time[0], w_time[1])
