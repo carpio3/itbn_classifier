@@ -168,7 +168,7 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
 
 
 # prints the ground truth for the timing information
-def print_real_times(td):
+def process_real_times(td):
     final_td = dict()
     mapping = {'noise_0_s': 'command_s', 'noise_0_e': 'command_e',
                'noise_1_s': 'prompt_s', 'noise_1_e': 'prompt_e',
@@ -206,8 +206,8 @@ def print_real_times(td):
         else:
             new_time = (curr_time[0], max(time, curr_time[1]))
         final_td[event_name] = new_time
-    for event in sorted(final_td):
-        print('{}: {}'.format(event, final_td[event]))
+    # for event in sorted(final_td):
+    #     print('{}: {}'.format(event, final_td[event]))
     # print('DEBUG: {}')
     # for event in sorted(td):
     #     print('{}: {}'.format(event, td[event]))
@@ -271,9 +271,12 @@ if __name__ == '__main__':
     aud_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     opt_matrix = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
+    # results
+    results = {True: 0, False: 0}
+
     num_files = len(file_names)
     counter = 0
-    while len(file_names) > 138:
+    while len(file_names) > 0:
         # read a batch of tfrecords into np arrays
         seq_len, opt_raw, aud_raw, timing_labels, timing_values, name = opt_dqn.sess.run(
          [seq_len_inp, opt_raw_inp, aud_raw_inp, timing_labels_inp, timing_values_inp, file_name])
@@ -446,13 +449,15 @@ if __name__ == '__main__':
             # print debugging timing information
             print(aud_real_sequence + "\n" + aud_pred_sequence)
             print(opt_real_sequence + "\n" + opt_pred_sequence)
-            print('REAL TIMES:')
-            final_td = print_real_times(timing_dict)
-            print('PREDICTED TIMES:')
+            # print('REAL TIMES:')
+            final_td = process_real_times(timing_dict)
+            # print('PREDICTED TIMES:')
             for event in sorted(event_times):
                 real_time = final_td[event]
                 correct = (event_times[event][0] < real_time[0] <
                            event_times[event][0] + AUD_FRAME_SIZE)
+                results[correct] = results[correct] + 1
                 print('{}: {}'.format(event, correct))
     # print confusion matrices
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
+    print('RESULTS: {}'.format(results))
