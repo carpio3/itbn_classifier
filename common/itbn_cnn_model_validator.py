@@ -368,7 +368,7 @@ if __name__ == '__main__':
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
                             predictions = itbn_model.predict(temp_window)
-                            print('predictions at {}: {}'.format(i, dict(predictions.ix[0])))
+                            print('prediction with {} at {}: {}'.format(i, temp_window, dict(predictions.ix[0])))
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
