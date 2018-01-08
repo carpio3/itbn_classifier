@@ -156,9 +156,11 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
 
 def print_real_times(td):
     final_td = dict()
-    mapping = {'noise_0': 'command', 'noise_1': 'prompt'}
+    mapping = {'noise_0_s': 'command_s', 'noise_0_e': 'command_e',
+               'noise_1_s': 'prompt_s', 'noise_1_e': 'prompt_e'}
     if td.get('reward_s', None) is not None:
-        mapping['abort'] = 'reward'
+        mapping['abort_s'] = 'reward_s'
+        mapping['abort_e'] = 'reward_e'
     for event, time in td.items():
         event = mapping.get(event, event)
         event_name = event.replace('_s', '').replace('_e', '')
