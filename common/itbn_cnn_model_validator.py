@@ -37,8 +37,8 @@ LABELS_PATH = '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/'
 ALPHA = 1e-5
 AUD_FRAME_SIZE = 20
 AUD_STRIDE = 7
-OPT_FRAME_SIZE = 45
-OPT_STRIDE = 20
+OPT_FRAME_SIZE = 20 #45
+OPT_STRIDE = 7 #20
 FAR_FRAME = 10000
 
 # debug characters for cnn classifications [silence, robot, human]
@@ -317,7 +317,7 @@ if __name__ == '__main__':
                         aud_chunk_counter += 1
                         aud_window_processed = True
                         w_time = (start_frame, end_frame)
-                if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
+                if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE and aud_selected_class == 0:
                     with opt_dqn.sess.as_default():
                         start_frame = OPT_STRIDE * opt_chunk_counter
                         end_frame = OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE
@@ -338,7 +338,7 @@ if __name__ == '__main__':
                         opt_window_processed = True
                         w_time = (start_frame, end_frame)
                 if not terminate and (aud_window_processed or opt_window_processed):
-                    if opt_window_processed:
+                    if opt_window_processed and opt_selected_class == 2:
                         important_obs = opt_selected_class
                     else:
                         important_obs = aud_selected_class
