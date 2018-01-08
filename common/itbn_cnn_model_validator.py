@@ -163,7 +163,7 @@ def print_real_times(td):
         event_info = event.split('_')
         if not event_info[0] in ignore:
             times = final_td.get(event_info[0], (-1, -1))
-            if event_info[1] = 's':
+            if event_info[1] == 's':
                 times[0] = td[event]
             else:
                 times[1] = td[event]
