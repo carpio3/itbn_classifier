@@ -172,7 +172,9 @@ def print_real_times(td):
         final_td[event_name] = new_time
     for event in sorted(final_td):
         print('{}: {}'.format(event, final_td[event]))
-    print('DEBUG: {}'.format(td))
+    print('DEBUG: {}')
+    for event in sorted(td):
+        print('{}: {}'.format(event, td[event]))
 
 
 if __name__ == '__main__':
