@@ -381,11 +381,9 @@ if __name__ == '__main__':
                                     temp_window[itbn_model.temporal_node_marker + events[0] + '_' +
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
-                            if event == 'response':
-                                print(temp_window)
                             predictions = itbn_model.predict(temp_window)
-                            print('prediction with {}, {}: {}'.format(
-                                obs_robot, obs_human, dict(predictions.ix[0])))
+                            # print('prediction with {}, {}: {}'.format(
+                            #     obs_robot, obs_human, dict(predictions.ix[0])))
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
