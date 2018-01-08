@@ -159,8 +159,9 @@ def print_real_times(td):
     ignore = ['command', 'prompt']
     for event in sorted(td):
         event_info = event.split('_')
-        if not event_info[0] in ignore:
+        if event_info[0] not in ignore:
             event.replace('noise_0', 'command').replace('noise_1', 'prompt')
+            event_info = event.split('_')
             times = final_td.get(event_info[0], (-1, -1))
             if event_info[1] == 's':
                 times = (td[event], times[1])
