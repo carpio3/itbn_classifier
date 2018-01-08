@@ -453,7 +453,7 @@ if __name__ == '__main__':
             final_td = process_real_times(timing_dict)
             # print('PREDICTED TIMES:')
             for event in sorted(event_times):
-                real_time = final_td[event]
+                real_time = final_td.get(event, (-1, -1))
                 correct = (event_times[event][0] <= real_time[0] <=
                            event_times[event][0] + AUD_FRAME_SIZE)
                 results[correct] = results[correct] + 1
