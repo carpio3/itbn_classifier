@@ -377,6 +377,8 @@ if __name__ == '__main__':
                                     temp_window[itbn_model.temporal_node_marker + events[0] + '_' +
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
+                            if event == 'response':
+                                print(temp_window)
                             predictions = itbn_model.predict(temp_window)
                             print('prediction with {}, {}: {}'.format(
                                 obs_robot, obs_human, dict(predictions.ix[0])))
@@ -398,10 +400,10 @@ if __name__ == '__main__':
                         if terminate:
                             aud_pred_sequence += '  '
                             opt_pred_sequence += '  '
-                    # else:
-                    #     curr_time = event_times[last_event]
-                    #     new_time = (curr_time[0], w_time[1])
-                    #     event_times[last_event] = new_time
+                    else:
+                        curr_time = event_times[last_event]
+                        new_time = (curr_time[0], w_time[1])
+                        event_times[last_event] = new_time
             # print debugging timing information
             print(aud_real_sequence + "\n" + aud_pred_sequence)
             print(opt_real_sequence + "\n" + opt_pred_sequence)
