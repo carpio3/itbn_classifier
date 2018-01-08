@@ -163,10 +163,10 @@ def print_real_times(td):
                'audio_1_s': 'response_s', 'audio_1_e': 'response_e',
                'gesture_0_s': 'response_s', 'gesture_0_e': 'response_e',
                'gesture_1_s': 'response_s', 'gesture_1_e': 'response_e'}
-    if td.get(['audio_0_s'], None) is not None and td.get(['audio_1_s'], None) is not None:
+    if td.get('audio_0_s', None) is not None and td.get('audio_1_s', None) is not None:
         del td['audio_1_s']
         del td['audio_1_e']
-    if td.get(['gesture_0_s'], None) is not None and td.get(['gesture_1_s'], None) is not None:
+    if td.get('gesture_0_s', None) is not None and td.get('gesture_1_s', None) is not None:
         del td['gesture_1_s']
         del td['gesture_1_e']
     if td.get('reward_s', None) is not None:
