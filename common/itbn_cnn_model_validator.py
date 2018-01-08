@@ -59,10 +59,10 @@ WINDOW_INTERVAL_RELATION_MAP = {
 EVENT_INTERVAL_RELATION_MAP = {
     (-1., -1., -1., -1.): 1,
     (1., 1., 1., 1.): 2,
-    (-1., -1., -1., 0.): 1,
-    (1., 1., 0., 1.): 2,
-    (-1., -1., -1., 1.): 1,
-    (1., 1., -1., 1.): 2,
+    (-1., -1., -1., 0.): 3,
+    (1., 1., 0., 1.): 4,
+    (-1., -1., -1., 1.): 5,
+    (1., 1., -1., 1.): 6,
     (1., -1., -1., 1.) : 7,
     (-1., 1., -1., 1.) : 8,
     (0., -1., -1., 1.) : 9,
@@ -373,7 +373,7 @@ if __name__ == '__main__':
                         for event in pending_events:
                             temp_window = window_data.copy(deep=True)
                             for events, rel in window_rels.items():
-                                if events in events:
+                                if event in events:
                                     temp_window[itbn_model.temporal_node_marker + events[0] + '_' +
                                                 events[1]] = rel
                             temp_window.drop(event, axis=1, inplace=True)
