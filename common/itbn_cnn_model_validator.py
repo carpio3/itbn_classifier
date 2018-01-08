@@ -290,8 +290,8 @@ if __name__ == '__main__':
             terminate = False
             event_times = dict()
             w_time = (0, 0)
-            last_obs_robot = -1
-            last_obs_human = -1
+            last_aud_obs = -1
+            last_opt_obs = -1
             last_event = ''
 
             for i in range(seq_len):
@@ -348,11 +348,11 @@ if __name__ == '__main__':
                         session_data[start_event][0] = 'Y'
                         pending_events.remove(start_event)
                         event_times[start_event] = w_time
-                        last_obs_human = obs_human
-                        last_obs_robot = obs_robot
+                        last_aud_obs = aud_selected_class
+                        last_opt_obs = opt_selected_class
                         last_event = start_event
-                    elif start_event not in pending_events and (obs_robot != last_obs_robot or
-                                                                obs_human != last_obs_human):
+                    elif start_event not in pending_events and (obs_robot != last_opt_obs or
+                                                                obs_human != last_aud_obs):
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
@@ -382,8 +382,8 @@ if __name__ == '__main__':
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
-                                last_obs_human = obs_human
-                                last_obs_robot = obs_robot
+                                last_aud_obs = aud_selected_class
+                                last_opt_obs = opt_selected_class
                                 last_event = event
                         for event in new_preds:
                             session_data[event][0] = 'Y'
