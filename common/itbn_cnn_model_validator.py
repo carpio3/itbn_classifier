@@ -20,7 +20,7 @@ from pgmpy.models import IntervalTemporalBayesianNetwork
 pd.options.mode.chained_assignment = None
 
 # boolean used to switch between training/validation
-validation = False
+validation = True
 
 # itbn model path
 ITBN_MODEL_PATH = 'input/itbn.nx'
