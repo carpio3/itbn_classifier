@@ -37,8 +37,8 @@ LABELS_PATH = '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/'
 ALPHA = 1e-5
 AUD_FRAME_SIZE = 20
 AUD_STRIDE = 7
-OPT_FRAME_SIZE = 45
-OPT_STRIDE = 20
+OPT_FRAME_SIZE = 20
+OPT_STRIDE = 7
 FAR_FRAME = 10000
 
 # debug characters for cnn classifications [silence, robot, human]
