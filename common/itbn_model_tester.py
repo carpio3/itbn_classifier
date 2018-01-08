@@ -11,15 +11,15 @@ model = IntervalTemporalBayesianNetwork(nx_model.edges())
 model.add_cpds(*nx_model.cpds)
 model.learn_temporal_relationships_from_cpds()
 
-# model.draw_to_file("test_output/loaded_itbn.png", include_obs=True)
+model.draw_to_file("test_output/loaded_itbn.png", include_obs=True)
 # os.system('gnome-open test_output/itbn.png')
 
-# for cpd in model.cpds:
-#     print(cpd)
-# print(sorted(model.nodes()))
+for cpd in model.cpds:
+    print(cpd)
+print(sorted(model.nodes()))
 
-obs_robot = 1
-obs_human = 0
+obs_robot = 0
+obs_human = 1
 
 data = pd.DataFrame([('N', 'Y', 'N', 'N', 'N',
                       obs_robot, obs_robot, obs_robot, obs_human, obs_robot,
@@ -29,10 +29,10 @@ data = pd.DataFrame([('N', 'Y', 'N', 'N', 'N',
                              'tm_command_prompt', 'tm_command_response', 'tm_prompt_abort',
                              'tm_prompt_response', 'tm_response_reward'])
 
-data.drop('abort', axis=1, inplace=True)
+# data.drop('abort', axis=1, inplace=True)
 # data.drop('command', axis=1, inplace=True)
-data.drop('prompt', axis=1, inplace=True)
+# data.drop('prompt', axis=1, inplace=True)
 data.drop('response', axis=1, inplace=True)
-data.drop('reward', axis=1, inplace=True)
+# data.drop('reward', axis=1, inplace=True)
 predictions = model.predict_probability(data)
 print(predictions)
