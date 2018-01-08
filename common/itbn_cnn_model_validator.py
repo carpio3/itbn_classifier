@@ -166,9 +166,17 @@ def print_real_times(td):
     if td.get('audio_0_s', None) is not None and td.get('audio_1_s', None) is not None:
         del td['audio_1_s']
         del td['audio_1_e']
+        td['reward_s'] = td['prompt_s']
+        td['reward_e'] = td['prompt_e']
+        del td['prompt_s']
+        del td['prompt_e']
     if td.get('gesture_0_s', None) is not None and td.get('gesture_1_s', None) is not None:
         del td['gesture_1_s']
         del td['gesture_1_e']
+        td['reward_s'] = td['prompt_s']
+        td['reward_e'] = td['prompt_e']
+        del td['prompt_s']
+        del td['prompt_e']
     if td.get('reward_s', None) is not None:
         mapping['abort_s'] = 'reward_s'
         mapping['abort_e'] = 'reward_e'
@@ -297,7 +305,7 @@ if __name__ == '__main__':
             human_events = ['obs_response']
             start_event = 'command'
             terminal_events = ['abort', 'reward']
-            events_priority = ['reward', 'abort', 'prompt', 'response']
+            events_priority = {1: 'reward', 2: 'abort', 3: 'prompt', 4: 'response'}
             terminate = False
             event_times = dict()
             w_time = (0, 0)
@@ -397,7 +405,8 @@ if __name__ == '__main__':
                                 last_event = event
                         if len(new_preds) == 0:
                             last_obs = 0
-                        for event in events_priority:
+                        for event_code in sorted(events_priority):
+                            event = events_priority[event_code]
                             if event in new_preds:
                                 session_data[event][0] = 'Y'
                                 pending_events.remove(event)
