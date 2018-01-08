@@ -170,6 +170,7 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
 # prints the ground truth for the timing information
 def process_real_times(td):
     final_td = dict()
+    delete_prompt = False
     mapping = {'noise_0_s': 'command_s', 'noise_0_e': 'command_e',
                'noise_1_s': 'prompt_s', 'noise_1_e': 'prompt_e',
                'audio_0_s': 'response_s', 'audio_0_e': 'response_e',
@@ -181,15 +182,14 @@ def process_real_times(td):
         del td['audio_1_e']
         td['reward_s'] = td['noise_1_s']
         td['reward_e'] = td['noise_1_e']
-        del td['prompt_s']
-        del td['prompt_e']
-        del td['noise_1_s']
-        del td['noise_1_e']
+        delete_prompt = True
     if td.get('gesture_0_s', None) is not None and td.get('gesture_1_s', None) is not None:
         del td['gesture_1_s']
         del td['gesture_1_e']
         td['reward_s'] = td['noise_1_s']
         td['reward_e'] = td['noise_1_e']
+        delete_prompt = True
+    if delete_prompt:
         del td['prompt_s']
         del td['prompt_e']
         del td['noise_1_s']
@@ -454,7 +454,7 @@ if __name__ == '__main__':
             # print('PREDICTED TIMES:')
             for event in sorted(event_times):
                 real_time = final_td[event]
-                correct = (event_times[event][0] < real_time[0] <
+                correct = (event_times[event][0] <= real_time[0] <=
                            event_times[event][0] + AUD_FRAME_SIZE)
                 results[correct] = results[correct] + 1
                 print('{}: {}'.format(event, correct))
