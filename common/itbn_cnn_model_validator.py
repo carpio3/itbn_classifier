@@ -37,8 +37,8 @@ LABELS_PATH = '/home/assistive-robotics/PycharmProjects/dbn_arl/labels/'
 ALPHA = 1e-5
 AUD_FRAME_SIZE = 20
 AUD_STRIDE = 7
-OPT_FRAME_SIZE = 20
-OPT_STRIDE = 7
+OPT_FRAME_SIZE = 45
+OPT_STRIDE = 20
 FAR_FRAME = 10000
 
 # debug characters for cnn classifications [silence, robot, human]
@@ -262,7 +262,8 @@ if __name__ == '__main__':
             # initialize control and debugging variables
             aud_chunk_counter = 0
             opt_chunk_counter = 0
-            window_processed = False
+            aud_window_processed = False
+            opt_window_processed = False
             aud_selected_class = 0
             opt_selected_class = 0
             aud_real_sequence = ""
@@ -290,12 +291,12 @@ if __name__ == '__main__':
             terminate = False
             event_times = dict()
             w_time = (0, 0)
-            last_aud_obs = -1
-            last_opt_obs = -1
+            last_obs = -1
             last_event = ''
 
             for i in range(seq_len):
-                window_processed = False
+                aud_window_processed = False
+                opt_window_processed = False
                 if i == AUD_STRIDE * aud_chunk_counter + AUD_FRAME_SIZE:
                     with aud_dqn.sess.as_default():
                         start_frame = AUD_STRIDE * aud_chunk_counter
@@ -314,7 +315,7 @@ if __name__ == '__main__':
                         aud_real_sequence += SEQUENCE_CHARS[real_class]
                         aud_pred_sequence += SEQUENCE_CHARS[aud_selected_class]
                         aud_chunk_counter += 1
-                        window_processed = True
+                        aud_window_processed = True
                         w_time = (start_frame, end_frame)
                 if i == OPT_STRIDE * opt_chunk_counter + OPT_FRAME_SIZE:
                     with opt_dqn.sess.as_default():
@@ -334,25 +335,27 @@ if __name__ == '__main__':
                         opt_real_sequence += SEQUENCE_CHARS[real_class]
                         opt_pred_sequence += SEQUENCE_CHARS[opt_selected_class]
                         opt_chunk_counter += 1
-                        window_processed = True
+                        opt_window_processed = True
                         w_time = (start_frame, end_frame)
-                if window_processed:
+                if aud_window_processed or opt_window_processed:
+                    if opt_window_processed:
+                        important_obs = opt_selected_class
+                    else:
+                        important_obs = aud_selected_class
                     obs_robot = 0
                     obs_human = 0
                     window_rels = dict()
-                    if opt_selected_class == 1 or aud_selected_class == 1:
+                    if important_obs == 1:
                         obs_robot = 1
-                    if opt_selected_class == 2 or aud_selected_class == 2:
+                    if important_obs == 2:
                         obs_human = 1
                     if start_event in pending_events and obs_robot == 1:
                         session_data[start_event][0] = 'Y'
                         pending_events.remove(start_event)
                         event_times[start_event] = w_time
-                        last_aud_obs = aud_selected_class
-                        last_opt_obs = opt_selected_class
+                        last_obs = important_obs
                         last_event = start_event
-                    elif ((opt_selected_class != last_opt_obs or aud_selected_class != last_aud_obs)
-                            and start_event not in pending_events):
+                    elif start_event not in pending_events and important_obs != last_obs:
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
@@ -382,8 +385,7 @@ if __name__ == '__main__':
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
-                                last_aud_obs = aud_selected_class
-                                last_opt_obs = opt_selected_class
+                                last_obs = important_obs
                                 last_event = event
                         for event in new_preds:
                             session_data[event][0] = 'Y'
