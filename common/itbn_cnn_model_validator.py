@@ -290,7 +290,6 @@ if __name__ == '__main__':
             terminate = False
             event_times = dict()
             w_time = (0, 0)
-            last_obs = -1
             last_event = ''
 
             for i in range(seq_len):
@@ -350,9 +349,8 @@ if __name__ == '__main__':
                         session_data[start_event][0] = 'Y'
                         pending_events.remove(start_event)
                         event_times[start_event] = w_time
-                        last_obs = important_obs
                         last_event = start_event
-                    elif start_event not in pending_events and important_obs != last_obs:
+                    elif start_event not in pending_events:
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
@@ -383,7 +381,6 @@ if __name__ == '__main__':
                                 new_preds.append(event)
                                 event_times[event] = w_time
                                 last_event = event
-                                last_obs = important_obs
                         for event in new_preds:
                             session_data[event][0] = 'Y'
                             pending_events.remove(event)
