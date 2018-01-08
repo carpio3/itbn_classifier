@@ -154,6 +154,7 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
     return predicted_label_data
 
 
+# prints the ground truth for the timing information
 def print_real_times(td):
     final_td = dict()
     mapping = {'noise_0_s': 'command_s', 'noise_0_e': 'command_e',
@@ -172,9 +173,9 @@ def print_real_times(td):
         final_td[event_name] = new_time
     for event in sorted(final_td):
         print('{}: {}'.format(event, final_td[event]))
-    print('DEBUG: {}')
-    for event in sorted(td):
-        print('{}: {}'.format(event, td[event]))
+    # print('DEBUG: {}')
+    # for event in sorted(td):
+    #     print('{}: {}'.format(event, td[event]))
 
 
 if __name__ == '__main__':
@@ -287,6 +288,7 @@ if __name__ == '__main__':
             w_time = (0, 0)
             last_obs_robot = -1
             last_obs_human = -1
+            last_event = ''
 
             for i in range(seq_len):
                 window_processed = False
@@ -340,8 +342,9 @@ if __name__ == '__main__':
                         event_times[start_event] = w_time
                         last_obs_human = obs_human
                         last_obs_robot = obs_robot
+                        last_event = start_event
                     elif start_event not in pending_events and (obs_robot != last_obs_robot or
-                                                              obs_human != last_obs_human):
+                                                                obs_human != last_obs_human):
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
@@ -371,6 +374,7 @@ if __name__ == '__main__':
                                 event_times[event] = w_time
                                 last_obs_human = obs_human
                                 last_obs_robot = obs_robot
+                                last_event = event
                         for event in new_preds:
                             session_data[event][0] = 'Y'
                             pending_events.remove(event)
@@ -382,13 +386,15 @@ if __name__ == '__main__':
                                 terminate = True
                         if terminate:
                             break
-                        # print('session at {}: {}'.format(i, dict(session_data.ix[0])))
-            # print('SESSION: {}'.format(dict(session_data.ix[0])))
+                    else:
+                        curr_time = event_times[last_event]
+                        new_time = (curr_time[0], w_time[1])
+                        event_times[last_event] = new_time
+            # print debugging timing information
             print('REAL TIMES:')
             print_real_times(timing_dict)
             print('PREDICTED TIMES:')
             for event in sorted(event_times):
                 print('{}: {}'.format(event, event_times[event]))
-
-    # print results
+    # print confusion matrices
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
