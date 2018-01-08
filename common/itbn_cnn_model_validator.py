@@ -373,7 +373,7 @@ if __name__ == '__main__':
                                     rel = 0
                                 window_rels[(events[1], events[2])] = rel
                         new_preds = list()
-                        print('FRAME: {}'.format(i))
+                        # print('FRAME: {}'.format(i))
                         for event in pending_events:
                             temp_window = window_data.copy(deep=True)
                             for events, rel in window_rels.items():
