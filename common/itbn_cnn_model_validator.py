@@ -154,6 +154,26 @@ def label_data_opt(frame_size, stride, frame_num, sequence_len, td):
     return predicted_label_data
 
 
+def print_real_times(td):
+    final_td = dict()
+    ignore = ['command', 'prompt']
+    mapping = {'noise_0': 'command',
+               'noise_1': 'prompt'}
+    for event in sorted(td):
+        event_info = event.split('_')
+        if not event_info[0] in ignore:
+            times = final_td.get(event_info[0], (-1, -1))
+            if event_info[1] = 's':
+                times[0] = td[event]
+            else:
+                times[1] = td[event]
+            final_td[event_info[0]] = times
+    if 'reward' in final_td:
+        final_td.pop('abort')
+    for event in sorted(final_td):
+        print('{}: {}'.format(event, final_td[event]))
+
+
 if __name__ == '__main__':
     print("time start: {}".format(datetime.now()))
 
@@ -319,8 +339,6 @@ if __name__ == '__main__':
                         last_obs_robot = obs_robot
                     elif start_event not in pending_events and (obs_robot != last_obs_robot or
                                                               obs_human != last_obs_human):
-                        last_obs_human = obs_human
-                        last_obs_robot = obs_robot
                         window_data = session_data.copy(deep=True)
                         for col in list(window_data.columns):
                             if col in robot_events:
@@ -348,6 +366,8 @@ if __name__ == '__main__':
                             if predictions[event][0] == 'Y':
                                 new_preds.append(event)
                                 event_times[event] = w_time
+                                last_obs_human = obs_human
+                                last_obs_robot = obs_robot
                         for event in new_preds:
                             session_data[event][0] = 'Y'
                             pending_events.remove(event)
@@ -362,8 +382,7 @@ if __name__ == '__main__':
                         # print('session at {}: {}'.format(i, dict(session_data.ix[0])))
             # print('SESSION: {}'.format(dict(session_data.ix[0])))
             print('REAL TIMES:')
-            for event in sorted(timing_dict):
-                print('{}: {}'.format(event, timing_dict[event]))
+            print_real_times(timing_dict)
             print('PREDICTED TIMES:')
             for event in sorted(event_times):
                 print('{}: {}'.format(event, event_times[event]))
