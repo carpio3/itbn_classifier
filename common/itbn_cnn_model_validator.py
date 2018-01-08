@@ -71,17 +71,30 @@ EVENT_INTERVAL_RELATION_MAP = {
     (-1., 0., -1., 1.) : 12,
     (0., 0., -1., 1.) : 13
 }
+EVALUATION_INTERVAL_RELATION_MAP = {
+    (-1., -1., -1., 1.): 5,
+    (1., 1., -1., 1.): 6,
+    (1., -1., -1., 1.) : 7,
+    (-1., 1., -1., 1.) : 8,
+    (0., -1., -1., 1.) : 9,
+    (0., 1., -1., 1.) : 10,
+    (1., 0., -1., 1.) : 11,
+    (-1., 0., -1., 1.) : 12,
+    (0., 0., -1., 1.) : 13
+}
 
 
 # FUNCTIONS DEFINITION ##############################################
 # given a window and event start and end time calculates the interval relation between them
-def calculate_relationship(a_s, a_e, b_s, b_e, reduced_set=True):
+def calculate_relationship(a_s, a_e, b_s, b_e, set_name='window'):
     temp_distance = (np.sign(b_s - a_s), np.sign(b_e - a_e),
                      np.sign(b_s - a_e), np.sign(b_e - a_s))
-    if reduced_set:
+    if set_name == 'window':
         return WINDOW_INTERVAL_RELATION_MAP.get(temp_distance, '')
+    elif set_name == 'event':
+        return EVENT_INTERVAL_RELATION_MAP.get(temp_distance, 0)
     else:
-        return  EVENT_INTERVAL_RELATION_MAP.get(temp_distance, 0)
+        return EVALUATION_INTERVAL_RELATION_MAP.get(temp_distance, 0)
 
 
 # verifies if there is a valid interval relation between the event and the given window
@@ -166,17 +179,21 @@ def print_real_times(td):
     if td.get('audio_0_s', None) is not None and td.get('audio_1_s', None) is not None:
         del td['audio_1_s']
         del td['audio_1_e']
-        td['reward_s'] = td['prompt_s']
-        td['reward_e'] = td['prompt_e']
+        td['reward_s'] = td['noise_1_s']
+        td['reward_e'] = td['noise_1_e']
         del td['prompt_s']
         del td['prompt_e']
+        del td['noise_1_s']
+        del td['noise_1_e']
     if td.get('gesture_0_s', None) is not None and td.get('gesture_1_s', None) is not None:
         del td['gesture_1_s']
         del td['gesture_1_e']
-        td['reward_s'] = td['prompt_s']
-        td['reward_e'] = td['prompt_e']
+        td['reward_s'] = td['noise_1_s']
+        td['reward_e'] = td['noise_1_e']
         del td['prompt_s']
         del td['prompt_e']
+        del td['noise_1_s']
+        del td['noise_1_e']
     if td.get('reward_s', None) is not None:
         mapping['abort_s'] = 'reward_s'
         mapping['abort_e'] = 'reward_e'
@@ -194,6 +211,7 @@ def print_real_times(td):
     # print('DEBUG: {}')
     # for event in sorted(td):
     #     print('{}: {}'.format(event, td[event]))
+    return final_td
 
 
 if __name__ == '__main__':
@@ -383,7 +401,7 @@ if __name__ == '__main__':
                                 events = col.split('_')
                                 a_times = event_times.get(events[1], (FAR_FRAME, FAR_FRAME + 1))
                                 rel = calculate_relationship(a_times[0], a_times[1], w_time[0],
-                                                             w_time[1], reduced_set=False)
+                                                             w_time[1], set_name='event')
                                 if rel not in itbn_model.relation_map[(events[1], events[2])]:
                                     rel = 0
                                 window_rels[(events[1], events[2])] = rel
@@ -429,9 +447,12 @@ if __name__ == '__main__':
             print(aud_real_sequence + "\n" + aud_pred_sequence)
             print(opt_real_sequence + "\n" + opt_pred_sequence)
             print('REAL TIMES:')
-            print_real_times(timing_dict)
+            final_td = print_real_times(timing_dict)
             print('PREDICTED TIMES:')
             for event in sorted(event_times):
-                print('{}: {}'.format(event, event_times[event]))
+                real_time = final_td[event]
+                correct = (event_times[event][0] < real_time[0] <
+                           event_times[event][0] + AUD_FRAME_SIZE)
+                print('{}: {}'.format(event, correct))
     # print confusion matrices
     print("time end: {}\nAUDIO\n{}\n\nVIDEO\n{}\n".format(datetime.now(), aud_matrix, opt_matrix))
