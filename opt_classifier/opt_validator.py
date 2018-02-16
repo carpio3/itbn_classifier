@@ -12,8 +12,8 @@ TAG = "itbn_opt"
 
 ALPHA = 1e-5
 
-FRAME_SIZE = 45
-STRIDE = 20
+FRAME_SIZE = 20 #45
+STRIDE = 7 #20
 
 SEQUENCE_CHARS = ["_", "|", "*"]
 interval_relation_map = {

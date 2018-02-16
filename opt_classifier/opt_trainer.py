@@ -11,8 +11,8 @@ TAG = "itbn_opt"
 ALPHA = 1e-5
 NUM_ITER = 30000
 
-FRAME_SIZE = 45
-STRIDE = 20
+FRAME_SIZE = 20 #45
+STRIDE = 7 #20
 WINDOW_PROBABILITIES = [0.31, 0.12]
 interval_relation_map = {
     (1., -1., -1., 1.): 'DURING',
